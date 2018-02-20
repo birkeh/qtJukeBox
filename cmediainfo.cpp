@@ -202,12 +202,16 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpApe->properties();
 
 		APE::Properties* lpAudioProperties			= lpApe->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
-		m_iVersion									= lpAudioProperties->version();
+
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
+			m_iVersion									= lpAudioProperties->version();
+		}
 		break;
 	}
 	case MEDIA_TYPE_ASF:
@@ -231,11 +235,15 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpASF->properties();
 
 		ASF::Properties* lpAudioProperties			= lpASF->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_bIsEncrypted								= lpAudioProperties->isEncrypted();
+
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_bIsEncrypted								= lpAudioProperties->isEncrypted();
+		}
 		break;
 	}
 	case MEDIA_TYPE_FLAC:
@@ -246,12 +254,16 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpFlac->properties();
 
 		FLAC::Properties* lpAudioProperties			= lpFlac->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_iSampleWidth								= lpAudioProperties->sampleWidth();
-		m_ullSampleFrames							= lpAudioProperties->sampleFrames();
+
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_iSampleWidth								= lpAudioProperties->sampleWidth();
+			m_ullSampleFrames							= lpAudioProperties->sampleFrames();
+		}
 		break;
 	}
 	case MEDIA_TYPE_MP4:
@@ -273,12 +285,16 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpMP4->properties();
 
 		MP4::Properties* lpAudioProperties			= lpMP4->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
-		m_bIsEncrypted								= lpAudioProperties->isEncrypted();
+
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
+			m_bIsEncrypted								= lpAudioProperties->isEncrypted();
+		}
 		break;
 	}
 	case MEDIA_TYPE_MPC:
@@ -289,16 +305,20 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpMPC->properties();
 
 		MPC::Properties* lpAudioProperties			= lpMPC->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_iVersion									= lpAudioProperties->mpcVersion();
-		m_ullSampleFrames							= lpAudioProperties->sampleFrames();
-		m_iTrackGain								= lpAudioProperties->trackGain();
-		m_iAlbumGain								= lpAudioProperties->albumGain();
-		m_iTrackPeak								= lpAudioProperties->trackPeak();
-		m_iAlbumPeak								= lpAudioProperties->albumPeak();
+
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_iVersion									= lpAudioProperties->mpcVersion();
+			m_ullSampleFrames							= lpAudioProperties->sampleFrames();
+			m_iTrackGain								= lpAudioProperties->trackGain();
+			m_iAlbumGain								= lpAudioProperties->albumGain();
+			m_iTrackPeak								= lpAudioProperties->trackPeak();
+			m_iAlbumPeak								= lpAudioProperties->albumPeak();
+		}
 		break;
 	}
 	case MEDIA_TYPE_MPEG:
@@ -311,42 +331,45 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpMPEG->properties();
 
 		MPEG::Properties*	lpAudioProperties		= lpMPEG->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_iLayer									= lpAudioProperties->layer();
-		switch(lpAudioProperties->version())
-		{
-		case MPEG::Header::Version1:
-			m_iVersion	= 10;
-			break;
-		case MPEG::Header::Version2:
-			m_iVersion	= 20;
-			break;
-		case MPEG::Header::Version2_5:
-			m_iVersion	= 25;
-			break;
-		}
-		m_bProtectionEnabled						= lpAudioProperties->protectionEnabled();
-		switch(lpAudioProperties->channelMode())
-		{
-		case MPEG::Header::Stereo:
-			m_channelMode							= CHANNEL_MODE_STEREO;
-			break;
-		case MPEG::Header::JointStereo:
-			m_channelMode							= CHANNEL_MODE_JOINTSTEREO;
-			break;
-		case MPEG::Header::DualChannel:
-			m_channelMode							= CHANNEL_MODE_DUALMONO;
-			break;
-		case MPEG::Header::SingleChannel:
-			m_channelMode							= CHANNEL_MODE_MONO;
-			break;
-		}
-		m_bIsCopyrighted							= lpAudioProperties->isCopyrighted();
-		m_bIsOriginal								= lpAudioProperties->isOriginal();
 
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_iLayer									= lpAudioProperties->layer();
+			switch(lpAudioProperties->version())
+			{
+			case MPEG::Header::Version1:
+				m_iVersion	= 10;
+				break;
+			case MPEG::Header::Version2:
+				m_iVersion	= 20;
+				break;
+			case MPEG::Header::Version2_5:
+				m_iVersion	= 25;
+				break;
+			}
+			m_bProtectionEnabled						= lpAudioProperties->protectionEnabled();
+			switch(lpAudioProperties->channelMode())
+			{
+			case MPEG::Header::Stereo:
+				m_channelMode							= CHANNEL_MODE_STEREO;
+				break;
+			case MPEG::Header::JointStereo:
+				m_channelMode							= CHANNEL_MODE_JOINTSTEREO;
+				break;
+			case MPEG::Header::DualChannel:
+				m_channelMode							= CHANNEL_MODE_DUALMONO;
+				break;
+			case MPEG::Header::SingleChannel:
+				m_channelMode							= CHANNEL_MODE_MONO;
+				break;
+			}
+			m_bIsCopyrighted							= lpAudioProperties->isCopyrighted();
+			m_bIsOriginal								= lpAudioProperties->isOriginal();
+		}
 		break;
 	}
 	case MEDIA_TYPE_TRUEAUDIO:
@@ -357,12 +380,16 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpTrueAudio->properties();
 
 		TrueAudio::Properties* lpAudioProperties	= lpTrueAudio->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
-		m_iVersion									= lpAudioProperties->ttaVersion();
+
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
+			m_iVersion									= lpAudioProperties->ttaVersion();
+		}
 		break;
 	}
 	case MEDIA_TYPE_WAVPACK:
@@ -373,13 +400,17 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpWavPack->properties();
 
 		WavPack::Properties* lpAudioProperties		= lpWavPack->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
-		m_ullSampleFrames							= lpAudioProperties->sampleFrames();
-		m_iVersion									= lpAudioProperties->version();
+
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
+			m_ullSampleFrames							= lpAudioProperties->sampleFrames();
+			m_iVersion									= lpAudioProperties->version();
+		}
 		break;
 	}
 	case MEDIA_TYPE_WAV:
@@ -389,12 +420,16 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		tags										= lpWav->properties();
 
 		RIFF::WAV::Properties* lpAudioProperties	= lpWav->audioProperties();
-		m_iLength									= lpAudioProperties->length();
-		m_iBitrate									= lpAudioProperties->bitrate();
-		m_iSampleRate								= lpAudioProperties->sampleRate();
-		m_iChannels									= lpAudioProperties->channels();
-		m_iSampleWidth								= lpAudioProperties->sampleWidth();
-		m_ullSampleFrames							= lpAudioProperties->sampleFrames();
+
+		if(lpAudioProperties)
+		{
+			m_iLength									= lpAudioProperties->length();
+			m_iBitrate									= lpAudioProperties->bitrate();
+			m_iSampleRate								= lpAudioProperties->sampleRate();
+			m_iChannels									= lpAudioProperties->channels();
+			m_iSampleWidth								= lpAudioProperties->sampleWidth();
+			m_ullSampleFrames							= lpAudioProperties->sampleFrames();
+		}
 		break;
 	}
 	default:
@@ -709,11 +744,7 @@ void cMediaInfo::readTagV2(ID3v2::Tag* lpTag)
 			szDescription	= lpPicture->description().toCString();
 
 			QByteArray	pictureData	= QByteArray(lpPicture->picture().data(), lpPicture->picture().size());
-//			QPixmap		pixmap;
-//			pixmap.loadFromData(pictureData);
-//			m_imageList.add(pictureData, m_szFileName, (cImage::ImageType)t, szDescription);
-			QImage		image		= QImage::fromData(pictureData);
-			m_images.append(image);
+			m_imageList.add(pictureData, m_szFileName, (cImage::ImageType)t, szDescription);
 		}
 	}
 }

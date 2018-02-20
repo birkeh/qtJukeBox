@@ -6,7 +6,7 @@
 #include <QMetaType>
 
 
-class cImage
+class cImage : public QImage
 {
 public:
 	enum	ImageType
@@ -34,23 +34,24 @@ public:
 		PublisherLogo		= 0x14
 	};
 	cImage();
-	cImage(const QImage& image, const QString& szFileName, const cImage::ImageType& imageType, const QString& szDescription);
 	cImage(const QByteArray& array, const QString& szFileName, const cImage::ImageType& imageType, const QString& szDescription);
-
 protected:
-	QImage		m_image;
 	QString		m_szFileName;
 	ImageType	m_ImageType;
 	QString		m_szDescription;
+
+signals:
+
+public slots:
+
 };
 
 Q_DECLARE_METATYPE(cImage)
 
-class cImageList : public QList<cImage *>
+class cImageList : public QList<cImage>
 {
 public:
 	cImageList();
-	cImage*	add(const QImage& image, const QString& szFileName, const cImage::ImageType& imageType, const QString& szDescription);
 	cImage*	add(const QByteArray& array, const QString& szFileName, const cImage::ImageType& imageType, const QString& szDescription);
 };
 

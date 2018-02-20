@@ -65,8 +65,8 @@ cMainWindow::cMainWindow(QWidget *parent) :
 //	lpMediaInfo->readFromFile("C:\\Users\\birkeh\\Music\\Amy MacDonald\\Life In A Beautiful Light\\CD1\\Amy Macdonald - Life In A Beautiful Light - 05 - The Game.mp3");
 //	lpMediaInfo->readFromFile("C:\\Users\\birkeh\\Music\\Amy MacDonald\\A Curious Thing\\CD1\\Amy MacDonald - A Curious Thing - 01 - Don't tell me it's over.mp3");
 //	lpMediaInfo->readFromFile("C:\\Users\\birkeh\\Music\\id3v1\\id3v1_140_genre_W.mp3");
-	lpMediaInfo->readFromFile("C:\\Users\\birkeh\\Documents\\__P__\\MP3Test\\From-The-Machine-World.mp3");
-
+//	lpMediaInfo->readFromFile("C:\\Users\\vet0572\\Music\\Heartbeat\\Strong\\CD1\\Heartbeat - Strong - 01 - Strong.mp3");
+	lpMediaInfo->readFromFile("C:\\Users\\vet0572\\Music\\Amy MacDonald\\Under Stars (Deluxe)\\02 - Under Stars.mp3");
 	QString			sz;
 	QStringList		szL;
 	qint16			i;

@@ -22,14 +22,16 @@ SOURCES += main.cpp\
     ctag.cpp \
     cdatabase.cpp \
     cstring.cpp \
-    cimage.cpp
+    cimage.cpp \
+    common.cpp
 
 HEADERS  += cmainwindow.h \
     cmediainfo.h \
     ctag.h \
     cdatabase.h \
     cstring.h \
-    cimage.h
+    cimage.h \
+    common.h
 
 FORMS    += cmainwindow.ui
 

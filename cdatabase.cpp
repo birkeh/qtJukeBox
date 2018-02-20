@@ -1,4 +1,6 @@
 #include "cdatabase.h"
+#include "common.h"
+
 #include <QDir>
 #include <QSettings>
 
@@ -47,91 +49,89 @@ int cDatabase::createDB()
 
 	if(!query.exec("CREATE TABLE version\n"
 				   "(version integer)"))
+	{
+		myDebug << query.lastError().text();
 		return(0);
+	}
+
 	if(!query.exec("INSERT INTO version (version) VALUES (1)"))
+	{
+		myDebug << query.lastError().text();
 		return(0);
+	}
 
-	if(!query.exec("CREATE TABLE file\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " filename TEXT NOT NULL,\n"
-				   " filetype INTEGER DEFAULT (0),\n"
-				   " length INTEGER DEFAULT (-1),\n"
-				   " bitrate INTEGER DEFAULT (-1),\n"
-				   " samplerate INTEGER DEFAULT (-1),\n"
-				   " channels INTEGER DEFAULT (-1),\n"
-				   " bitspersample INTEGER DEFAULT (-1),\n"
-				   " layer INTEGER DEFAULT (-1),\n"
-				   " version INTEGER DEFAULT (-1),\n"
-				   " samplewidth INTEGER DEFAULT (-1),\n"
-				   " sampleframes INTEGER DEFAULT (0),\n"
-				   " isencrypted INTEGER DEFAULT (0),\n"
-				   " trackgain INTEGER DEFAULT (-1),\n"
-				   " albumgain INTEGER DEFAULT (-1),\n"
-				   " trackpeak INTEGER DEFAULT (-1),\n"
-				   " albumpeak INTEGER DEFAULT (-1),\n"
-				   " protectionenabled INTEGER DEFAULT (0),\n"
-				   " channelmode INTEGER DEFAULT (0),\n"
-				   " iscopyrighted INTEGER DEFAULT (0),\n"
-				   " isoriginal INTEGER DEFAULT (0),\n"
-				   " album TEXT,\n"
-				   " comment TEXT,\n"
-				   " title TEXT\n,"
-				   " rating TEXT,\n"
-				   " copyright TEXT,\n"
-				   " track TEXT,\n"
-				   " year INTEGER)"))
+	if(!query.exec("CREATE TABLE file "
+				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+				   " fileName TEXT, "
+				   " fileSize INTEGER, "
+				   " fileDate DATE, "
+				   " fileType1 INTEGER, "
+				   " fileType TEXT, "
+				   " length1 INTEGER, "
+				   " length INTEGER, "
+				   " bitrate INTEGER, "
+				   " sampleRate INTEGER, "
+				   " channels INTEGER, "
+				   " bitsPerSample INTEGER, "
+				   " layer INTEGER, "
+				   " version INTEGER, "
+				   " sampleWidth INTEGER, "
+				   " sampleFrames INTEGER, "
+				   " isEncrypted BOOL, "
+				   " trackGain INTEGER, "
+				   " albumGain INTEGER, "
+				   " trackPeak INTEGER, "
+				   " albumPeak INTEGER, "
+				   " protectionEnabled BOOL, "
+				   " channelMode INTEGER, "
+				   " isCopyrighted BOOL, "
+				   " isOriginal BOOL, "
+				   " album TEXT, "
+				   " title TEXT, "
+				   " copyright TEXT, "
+				   " tracknumber TEXT, "
+				   " contentGroupDescription TEXT, "
+				   " subTitle TEXT, "
+				   " originalAlbum TEXT, "
+				   " partOfSet TEXT, "
+				   " subTitleOfSet TEXT, "
+				   " internationalStandardRecordingCode TEXT, "
+				   " leadArtist TEXT, "
+				   " band TEXT, "
+				   " conductor TEXT, "
+				   " interpret TEXT, "
+				   " originalArtist TEXT, "
+				   " textWriter TEXT, "
+				   " originalTextWriter TEXT, "
+				   " composer TEXT, "
+				   " encodedBy TEXT, "
+				   " beatsPerMinute INTEGER, "
+				   " language TEXT, "
+				   " contentType TEXT, "
+				   " mediaType TEXT, "
+				   " mood TEXT, "
+				   " producedNotice TEXT, "
+				   " publisher TEXT, "
+				   " fileOwner TEXT, "
+				   " internetRadioStationName TEXT, "
+				   " internetRadioStationOwner TEXT, "
+				   " originalFilename TEXT, "
+				   " playlistDelay TEXT, "
+				   " encodingTime INTEGER, "
+				   " originalReleaseTime DATE, "
+				   " recordingTime DATE, "
+				   " releaseTime DATE, "
+				   " taggingTime DATE, "
+				   " swhwSettings TEXT, "
+				   " albumSortOrder TEXT, "
+				   " performerSortOrder TEXT, "
+				   " titleSortOrder TEXT, "
+				   " synchronizedLyrics TEXT, "
+				   " unsynchronizedLyrics TEXT)"))
+	{
+		myDebug << query.lastError().text();
 		return(0);
-
-	if(!query.exec("CREATE TABLE id3v1artist\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " fileid INTEGER NOT NULL,\n"
-				   " person TEXT NOT NULL)"))
-		return(0);
-
-	if(!query.exec("CREATE TABLE id3v1genre\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " fileid INTEGER NOT NULL,\n"
-				   " genre TEXT NOT NULL)"))
-		return(0);
-
-	if(!query.exec("CREATE TABLE id3v2\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " fileid INTEGER NOT NULL,\n"
-				   " version INTEGER DEFAULT (-1),\n"
-				   " revision INTEGER DEFAULT (-1),\n"
-				   " size INTEGER DEFAULT (-1))"))
-		return(0);
-
-	if(!query.exec("CREATE TABLE id3v2tag\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " id3v2id INTEGER NOT NULL,\n"
-				   " tag TEXT NOT NULL,\n"
-				   " value TEXT)"))
-		return(0);
-
-	if(!query.exec("CREATE TABLE ape\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " fileid INTEGER NOT NULL\n)"))
-		return(0);
-
-	if(!query.exec("CREATE TABLE apetag\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " apeid INTEGER NOT NULL,\n"
-				   " tag TEXT NOT NULL,\n"
-				   " value TEXT)"))
-		return(0);
-
-	if(!query.exec("CREATE TABLE properties\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " fileid INTEGER NOT NULL)"))
-		return(0);
-
-	if(!query.exec("CREATE TABLE propertiestag\n"
-				   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
-				   " propertiesid INTEGER NOT NULL,\n"
-				   " tag TEXT NOT NULL,\n"
-				   " value TEXT)"))
-		return(0);
+	}
 
 	return(1);
 }

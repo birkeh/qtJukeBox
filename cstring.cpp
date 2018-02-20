@@ -11,6 +11,16 @@ cStringTime::cStringTime(const qint32& iTime, const QString& szString) :
 {
 }
 
+qint32 cStringTime::time()
+{
+	return(m_iTime);
+}
+
+QString cStringTime::string()
+{
+	return(m_szString);
+}
+
 cStringTimeList::cStringTimeList()
 {
 }
@@ -20,6 +30,19 @@ cStringTime* cStringTimeList::add(const qint32& iTime, const QString& szString)
 	cStringTime*	lpNew	= new cStringTime(iTime, szString);
 	append(lpNew);
 	return(lpNew);
+}
+
+QString cStringTimeList::join()
+{
+	QStringList	szList;
+	QString		str;
+
+	for(int x = 0;x < count();x++)
+	{
+		str	= QString::number(at(x)->time()) + "|" + at(x)->string();
+		szList.append(str);
+	}
+	return(szList.join("||"));
 }
 
 cString21::cString21() :

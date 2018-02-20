@@ -1,17 +1,22 @@
 #include "cmediainfo.h"
 
+#include "common.h"
+
 #include <QFileInfo>
 #include <QSqlQuery>
+#include <QSqlError>
+
 #include <QVariant>
 
 #include <QByteArray>
 #include <QImage>
+#include <QPixmap>
 
 #include <QDebug>
 
 
 cMediaInfo::cMediaInfo(bool bAPE, bool bID3V1, bool bID3V2, bool bProperties, QObject *parent) :
-	QObject(parent), m_bAPE(bAPE), m_bID3V1(bID3V1), m_bID3V2(bID3V2), m_bProperties(bProperties), m_bIsValid(false), m_FileType(MEDIA_TYPE_UNKNOWN)
+	QObject(parent), m_bAPE(bAPE), m_bID3V1(bID3V1), m_bID3V2(bID3V2), m_bProperties(bProperties), m_bIsValid(false), m_fileType(MEDIA_TYPE_UNKNOWN)
 {
 }
 
@@ -23,7 +28,7 @@ cMediaInfo::~cMediaInfo()
 void cMediaInfo::clear()
 {
 	m_szFileName							= "";
-	m_FileType								= MEDIA_TYPE_UNKNOWN;
+	m_fileType								= MEDIA_TYPE_UNKNOWN;
 	m_bIsValid								= false;
 
 	m_iLength								= -1;
@@ -126,47 +131,49 @@ void cMediaInfo::clear()
 	m_TAGPropertiesList.clear();
 
 	m_imageList.clear();
+	m_images.clear();
 }
 
 bool cMediaInfo::readFromFile(const QString& szFileName)
 {
 	clear();
 
-	QFileInfo	FileInfo(szFileName);
-	if(!FileInfo.exists())
+	QFileInfo	fileInfo(szFileName);
+	if(!fileInfo.exists())
 		return(false);
 
-	if(!FileInfo.suffix().compare("APE", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_APE;
-	else if(!FileInfo.suffix().compare("WMA", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_ASF;
-	else if(!FileInfo.suffix().compare("FLAC", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_FLAC;
-	else if(!FileInfo.suffix().compare("AAC", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_MP4;
-	else if(!FileInfo.suffix().compare("MP4", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_MP4;
-	else if(!FileInfo.suffix().compare("M4A", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_MP4;
-	else if(!FileInfo.suffix().compare("MPC", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_MPC;
-	else if(!FileInfo.suffix().compare("MP1", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_MPEG;
-	else if(!FileInfo.suffix().compare("MP2", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_MPEG;
-	else if(!FileInfo.suffix().compare("MP3", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_MPEG;
-	else if(!FileInfo.suffix().compare("TTA", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_TRUEAUDIO;
-	else if(!FileInfo.suffix().compare("WV", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_WAVPACK;
-	else if(!FileInfo.suffix().compare("WAV", Qt::CaseInsensitive))
-		m_FileType	= MEDIA_TYPE_WAV;
+	if(!fileInfo.suffix().compare("APE", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_APE;
+	else if(!fileInfo.suffix().compare("WMA", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_ASF;
+	else if(!fileInfo.suffix().compare("FLAC", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_FLAC;
+	else if(!fileInfo.suffix().compare("AAC", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_MP4;
+	else if(!fileInfo.suffix().compare("MP4", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_MP4;
+	else if(!fileInfo.suffix().compare("M4A", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_MP4;
+	else if(!fileInfo.suffix().compare("MPC", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_MPC;
+	else if(!fileInfo.suffix().compare("MP1", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_MPEG;
+	else if(!fileInfo.suffix().compare("MP2", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_MPEG;
+	else if(!fileInfo.suffix().compare("MP3", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_MPEG;
+	else if(!fileInfo.suffix().compare("TTA", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_TRUEAUDIO;
+	else if(!fileInfo.suffix().compare("WV", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_WAVPACK;
+	else if(!fileInfo.suffix().compare("WAV", Qt::CaseInsensitive))
+		m_fileType	= MEDIA_TYPE_WAV;
 
-	if(m_FileType	== MEDIA_TYPE_UNKNOWN)
+	if(m_fileType	== MEDIA_TYPE_UNKNOWN)
 		return(false);
 
 	m_szFileName					= szFileName;
+
 	ID3v1::Tag*			lpTagV1		= 0;
 	ID3v2::Tag*			lpTagV2		= 0;
 	APE::Tag*			lpTagAPE	= 0;
@@ -179,11 +186,12 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 	TrueAudio::File*	lpTrueAudio	= 0;
 	WavPack::File*		lpWavPack	= 0;
 	RIFF::WAV::File*	lpWav		= 0;
+
 	TagLib::PropertyMap	tags;
 
 	QString				szTmp;
 
-	switch(m_FileType)
+	switch(m_fileType)
 	{
 	case MEDIA_TYPE_APE:
 	{
@@ -296,6 +304,7 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 	case MEDIA_TYPE_MPEG:
 	{
 		lpMPEG	= new MPEG::File(m_szFileName.toLocal8Bit().data());
+
 		lpTagV1										= lpMPEG->ID3v1Tag();
 		lpTagV2										= lpMPEG->ID3v2Tag();
 		lpTagAPE									= lpMPEG->APETag();
@@ -337,6 +346,7 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 		}
 		m_bIsCopyrighted							= lpAudioProperties->isCopyrighted();
 		m_bIsOriginal								= lpAudioProperties->isOriginal();
+
 		break;
 	}
 	case MEDIA_TYPE_TRUEAUDIO:
@@ -423,207 +433,127 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 	return(true);
 }
 
-bool cMediaInfo::readFromDB(const QSqlDatabase& db)
+bool cMediaInfo::readFromDB()
 {
 	return(true);
 }
-/*
-qint32 cMediaInfo::writeFilename(const QSqlDatabase& db)
+
+qint32 cMediaInfo::writeFilename()
 {
-	QSqlQuery	query(db);
-	QString		sz;
+	QSqlQuery	query;
 
-	sz	= QString("SELECT id FROM file WHERE filename = \"%1\"").arg(m_szFileName);
-	if(!query.exec(sz))
-		return(-1);
-	query.first();
-	if(query.isValid())
-		return(-1);
+	query.prepare("SELECT id FROM file WHERE fileName=:fileName AND fileSize=:fileSize AND fileDate=:fileDate;");
+	query.bindValue(":fileName", fileName());
+	query.bindValue(":fileSize", fileSize());
+	query.bindValue(":fileDate", fileDate());
 
-	sz	= QString("INSERT INTO file (filename, filetype, length, bitrate, samplerate, channels, bitspersample, layer, version, samplewidth, sampleframes, isencrypted, trackgain, albumgain, trackpeak, albumpeak, protectionenabled, channelmode, iscopyrighted, isoriginal, album, comment, title, rating, copyright, track, year)\n"
-				  "values\n"
-				  "(\"%1\", %2, %3, %4, %5, %6, %7, %8, %9, %10,\n"
-				  " %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, \"%21\", \"%22\", \"%23\", \"%24\", \"%25\", \"%26\", %27)").arg(m_szFileName).arg(m_FileType).arg(m_iLength).arg(m_iBitrate).arg(m_iSampleRate).arg(m_iChannels).arg(m_iBitsPerSample).arg(m_iLayer).arg(m_iVersion).arg(m_iSampleWidth).arg(m_ullSampleFrames).arg(m_bIsEncrypted).arg(m_iTrackGain).arg(m_iAlbumGain).arg(m_iTrackPeak).arg(m_iAlbumPeak).arg(m_bProtectionEnabled).arg(m_channelMode).arg(m_bIsCopyrighted).arg(m_bIsOriginal).arg(m_szAlbum).arg(m_szComment).arg(m_szTitle).arg(m_szRating).arg(m_szCopyright).arg(m_szTrackNumber).arg(m_iYear);
+	if(!query.exec())
+	{
+		myDebug << query.lastError().text();
+		return(-1);
+	}
 
-	if(!query.exec(sz))
-		return(-1);
+	if(query.next())
+		query.prepare("UPDATE file SET fileType1=:fileType1, fileType=:fileType, length1=:length1, length=:length, bitrate=:bitrate, sampleRate=:sampleRate, channels=:channels, bitsPerSample=:bitsPerSample, layer=:layer, version=:version, sampleWidth=:sampleWidth, sampleFrames=:sampleFrames, isEncrypted=:isEncrypted, trackGain=:trackGain, albumGain=:albumGain, trackPeak=:trackPeak, albumPeak=:albumPeak, protectionEnabled=:protectionEnabled, channelMode=:channelMode, isCopyrighted=:isCopyrighted, isOriginal=:isOriginal, album=:album, title=:title, copyright=:copyright, tracknumber=:tracknumber, contentGroupDescription=:contentGroupDescription, subTitle=:subTitle, originalAlbum=:originalAlbum, partOfSet=:partOfSet, subTitleOfSet=:subTitleOfSet, internationalStandardRecordingCode=:internationalStandardRecordingCode, leadArtist=:leadArtist, band=:band, conductor=:conductor, interpret=:interpret, originalArtist=:originalArtist, textWriter=:textWriter, originalTextWriter=:originalTextWriter, composer=:composer, encodedBy=:encodedBy, beatsPerMinute=:beatsPerMinute, language=:language, contentType=:contentType, mediaType=:mediaType, mood=:mood, producedNotice=:producedNotice, publisher=:publisher, fileOwner=:fileOwner, internetRadioStationName=:internetRadioStationName, internetRadioStationOwner=:internetRadioStationOwner, originalFilename=:originalFilename, playlistDelay=:playlistDelay, encodingTime=:encodingTime, originalReleaseTime=:originalReleaseTime, recordingTime=:recordingTime, releaseTime=:releaseTime, taggingTime=:taggingTime, swhwSettings=:swhwSettings, albumSortOrder=:albumSortOrder, performerSortOrder=:performerSortOrder, titleSortOrder=:titleSortOrder, synchronizedLyrics=:synchronizedLyrics, unsynchronizedLyrics=:unsynchronizedLyrics WHERE filename=:filename AND filesize=:filesize AND filedate=:filedate;");
+	else
+		query.prepare("INSERT INTO file (fileName, fileSize, fileDate, fileType1, fileType, length1, length, bitrate, sampleRate, channels, bitsPerSample, layer, version, sampleWidth, sampleFrames, isEncrypted, trackGain, albumGain, trackPeak, albumPeak, protectionEnabled, channelMode, isCopyrighted, isOriginal, album, title, copyright, tracknumber, contentGroupDescription, subTitle, originalAlbum, partOfSet, subTitleOfSet, internationalStandardRecordingCode, leadArtist, band, conductor, interpret, originalArtist, textWriter, originalTextWriter, composer, encodedBy, beatsPerMinute, language, contentType, mediaType, mood, producedNotice, publisher, fileOwner, internetRadioStationName, internetRadioStationOwner, originalFilename, playlistDelay, encodingTime, originalReleaseTime, recordingTime, releaseTime, taggingTime, swhwSettings, albumSortOrder, performerSortOrder, titleSortOrder, synchronizedLyrics, unsynchronizedLyrics) VALUES (:fileName, :fileSize, :fileDate, :fileType1, :fileType, :length1, :length, :bitrate, :sampleRate, :channels, :bitsPerSample, :layer, :version, :sampleWidth, :sampleFrames, :isEncrypted, :trackGain, :albumGain, :trackPeak, :albumPeak, :protectionEnabled, :channelMode, :isCopyrighted, :isOriginal, :album, :title, :copyright, :tracknumber, :contentGroupDescription, :subTitle, :originalAlbum, :partOfSet, :subTitleOfSet, :internationalStandardRecordingCode, :leadArtist, :band, :conductor, :interpret, :originalArtist, :textWriter, :originalTextWriter, :composer, :encodedBy, :beatsPerMinute, :language, :contentType, :mediaType, :mood, :producedNotice, :publisher, :fileOwner, :internetRadioStationName, :internetRadioStationOwner, :originalFilename, :playlistDelay, :encodingTime, :originalReleaseTime, :recordingTime, :releaseTime, :taggingTime, :swhwSettings, :albumSortOrder, :performerSortOrder, :titleSortOrder, :synchronizedLyrics, :unsynchronizedLyrics);");
 
-	sz	= QString("SELECT id FROM file WHERE filename = \"%1\"").arg(m_szFileName);
-	if(!query.exec(sz))
+	query.bindValue(":fileName", fileName());
+	query.bindValue(":fileSize", fileSize());
+	query.bindValue(":fileDate", fileDate());
+	query.bindValue(":fileType1", fileType1());
+	query.bindValue(":fileType", fileType());
+	query.bindValue(":length1", length1());
+	query.bindValue(":length", length());
+	query.bindValue(":bitrate", bitrate());
+	query.bindValue(":sampleRate", sampleRate());
+	query.bindValue(":channels", channels());
+	query.bindValue(":bitsPerSample", bitsPerSample());
+	query.bindValue(":layer", layer());
+	query.bindValue(":version", version());
+	query.bindValue(":sampleWidth", sampleWidth());
+	query.bindValue(":sampleFrames", sampleFrames());
+	query.bindValue(":isEncrypted", isEncrypted());
+	query.bindValue(":trackGain", trackGain());
+	query.bindValue(":albumGain", albumGain());
+	query.bindValue(":trackPeak", trackPeak());
+	query.bindValue(":albumPeak", albumPeak());
+	query.bindValue(":protectionEnabled", protectionEnabled());
+	query.bindValue(":channelMode", channelMode());
+	query.bindValue(":isCopyrighted", isCopyrighted());
+	query.bindValue(":isOriginal", isOriginal());
+	query.bindValue(":album", album());
+	query.bindValue(":title", title());
+	query.bindValue(":copyright", copyright());
+	query.bindValue(":tracknumber", trackNumber());
+	query.bindValue(":contentGroupDescription", contentGroupDescription());
+	query.bindValue(":subTitle", subTitle());
+	query.bindValue(":originalAlbum", originalAlbum());
+	query.bindValue(":partOfSet", partOfSet());
+	query.bindValue(":subTitleOfSet", subTitleOfSet());
+	query.bindValue(":internationalStandardRecordingCode", internationalStandardRecordingCode());
+	query.bindValue(":leadArtist", leadArtist());
+	query.bindValue(":band", band());
+	query.bindValue(":conductor", conductor());
+	query.bindValue(":interpret", interpret().join(", "));
+	query.bindValue(":originalArtist", originalArtist());
+	query.bindValue(":textWriter", textWriter());
+	query.bindValue(":originalTextWriter", originalTextWriter());
+	query.bindValue(":composer", composer());
+	query.bindValue(":encodedBy", encodedBy());
+	query.bindValue(":beatsPerMinute", beatsPerMinute());
+	query.bindValue(":language", language().join(", "));
+	query.bindValue(":contentType", contentType().join(", "));
+	query.bindValue(":mediaType", mediaType().join(", "));
+	query.bindValue(":mood", mood());
+	query.bindValue(":producedNotice", producedNotice());
+	query.bindValue(":publisher", publisher());
+	query.bindValue(":fileOwner", fileOwner());
+	query.bindValue(":internetRadioStationName", internetRadioStationName());
+	query.bindValue(":internetRadioStationOwner", internetRadioStationOwner());
+	query.bindValue(":originalFilename", originalFilename());
+	query.bindValue(":playlistDelay", playlistDelay());
+	query.bindValue(":encodingTime", encodingTime());
+	query.bindValue(":originalReleaseTime", originalReleaseTime());
+	query.bindValue(":recordingTime", recordingTime());
+	query.bindValue(":releaseTime", releaseTime());
+	query.bindValue(":taggingTime", taggingTime());
+	query.bindValue(":swhwSettings", swhwSettings().join(", "));
+	query.bindValue(":albumSortOrder", albumSortOrder());
+	query.bindValue(":performerSortOrder", performerSortOrder());
+	query.bindValue(":titleSortOrder", titleSortOrder());
+	query.bindValue(":synchronizedLyrics", synchronizedLyrics().join());
+	query.bindValue(":unsynchronizedLyrics", unsynchronizedLyrics().join("||"));
+
+	if(!query.exec())
+	{
+		myDebug << query.lastError().text();
 		return(-1);
-	query.first();
-	if(!query.isValid())
+	}
+
+	query.prepare("SELECT id FROM file WHERE fileName=:fileName AND fileSize=:fileSize AND fileDate=:fileDate;");
+	query.bindValue(":fileName", fileName());
+	query.bindValue(":fileSize", fileSize());
+	query.bindValue(":fileDate", fileDate());
+
+	if(!query.exec())
+	{
+		myDebug << query.lastError().text();
 		return(-1);
-	return(query.value(0).toInt());
+	}
+
+	if(query.next())
+		return(query.value("id").toInt());
+
+	return(-1);
+
+//	cImageList		images();
 }
 
-qint32 cMediaInfo::writeArtist(const QSqlDatabase& db, qint32 idFile, const QString& szArtist)
+bool cMediaInfo::writeToDB()
 {
-	QSqlQuery	query(db);
-	QString		sz;
+	qint32		idFile	= writeFilename();
 
-	sz	= QString("SELECT id FROM id3v1artist WHERE fileid = %1 AND person = \"%2\"").arg(idFile).arg(szArtist);
-	if(!query.exec(sz))
-		return(-1);
-	query.first();
-	if(query.isValid())
-		return(-1);
-
-	for(int z = 0;z < m_szArtistList.count();z++)
-	{
-		QString	szArtist	= m_szArtistList.at(z);
-		sz	= QString("INSERT INTO id3v1artist (fileid, person) VALUES (%1, \"%2\")").arg(idFile).arg(szArtist);
-		if(!query.exec(sz))
-			return(-1);
-	}
-}
-*/
-bool cMediaInfo::writeToDB(const QSqlDatabase& db)
-{
-/*
-	QSqlQuery	query(db);
-	QString		sz;
-	qint32		idFile;
-	qint32		id3v2;
-	qint32		idAPE;
-	qint32		idProperties;
-
-	idFile	= writeFilename(db);
-	if(idFile == -1)
-		return(false);
-
-	if(m_szArtistList.count())
-	{
-		sz	= QString("SELECT id FROM id3v1artist WHERE fileid = %1").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		query.first();
-		if(query.isValid())
-			return(false);
-
-		for(int z = 0;z < m_szArtistList.count();z++)
-		{
-			QString	szArtist	= m_szArtistList.at(z);
-			sz	= QString("INSERT INTO id3v1artist (fileid, person) VALUES (%1, \"%2\")").arg(idFile).arg(szArtist);
-			if(!query.exec(sz))
-				return(false);
-		}
-	}
-
-	if(m_szGenreList.count())
-	{
-		sz	= QString("SELECT id FROM id3v1genre WHERE fileid = %1").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		query.first();
-		if(query.isValid())
-			return(false);
-
-		for(int z = 0;z < m_szGenreList.count();z++)
-		{
-			QString	szGenre	= m_szGenreList.at(z);
-			sz	= QString("INSERT INTO id3v1genre (fileid, genre) VALUES (%1, \"%2\")").arg(idFile).arg(szGenre);
-			if(!query.exec(sz))
-				return(false);
-		}
-	}
-
-	if(m_TAGv2List.count())
-	{
-		sz	= QString("SELECT id FROM id3v2 WHERE fileid = %1").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		query.first();
-		if(query.isValid())
-			return(false);
-
-		sz	= QString("INSERT INTO id3v2 (fileid, version, revision, size) VALUES (%1, %2, %3, %4)").arg(idFile).arg(m_iID3v2Version).arg(m_iID3v2Revision).arg(m_iID3v2Size);
-		if(!query.exec(sz))
-			return(false);
-		sz	= QString("SELECT id FROM id3v2 WHERE fileid = %1").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		query.first();
-		id3v2	= query.value(0).toInt();
-
-		for(int z = 0;z < m_TAGv2List.count();z++)
-		{
-			cTAG*		lpTag	= m_TAGv2List.at(z);
-			QString		szTag	= lpTag->tag();
-			QStringList	szValue	= lpTag->valueList();
-			for(int y = 0;y < szValue.count();y++)
-			{
-				sz	= QString("INSERT INTO id3v2tag (id3v2id, tag, value) VALUES (%1, \"%2\", \"%3\")").arg(id3v2).arg(szTag).arg(szValue.at(y));
-				if(!query.exec(sz))
-					return(false);
-			}
-		}
-	}
-
-	if(m_TAGAPEList.count())
-	{
-		sz	= QString("SELECT id FROM ape WHERE fileid = %1").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		query.first();
-		if(query.isValid())
-			return(false);
-
-		sz	= QString("INSERT INTO ape (fileid) VALUES (%1)").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		sz	= QString("SELECT id FROM ape WHERE fileid = %1").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		query.first();
-		idAPE	= query.value(0).toInt();
-
-		for(int z = 0;z < m_TAGAPEList.count();z++)
-		{
-			cTAG*		lpTag	= m_TAGAPEList.at(z);
-			QString		szTag	= lpTag->tag();
-			QStringList	szValue	= lpTag->valueList();
-			for(int y = 0;y < szValue.count();y++)
-			{
-				sz	= QString("INSERT INTO apetag (apeid, tag, value) VALUES (%1, \"%2\", \"%3\")").arg(idAPE).arg(szTag).arg(szValue.at(y));
-				if(!query.exec(sz))
-					return(false);
-			}
-		}
-	}
-
-	if(m_TAGPropertiesList.count())
-	{
-		sz	= QString("SELECT id FROM properties WHERE fileid = %1").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		query.first();
-		if(query.isValid())
-			return(false);
-
-		sz	= QString("INSERT INTO properties (fileid) VALUES (%1)").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		sz	= QString("SELECT id FROM properties WHERE fileid = %1").arg(idFile);
-		if(!query.exec(sz))
-			return(false);
-		query.first();
-		idProperties	= query.value(0).toInt();
-
-		for(int z = 0;z < m_TAGPropertiesList.count();z++)
-		{
-			cTAG*		lpTag	= m_TAGPropertiesList.at(z);
-			QString		szTag	= lpTag->tag();
-			QStringList	szValue	= lpTag->valueList();
-			for(int y = 0;y < szValue.count();y++)
-			{
-				sz	= QString("INSERT INTO propertiestag (propertiesid, tag, value) VALUES (%1, \"%2\", \"%3\")").arg(idProperties).arg(szTag).arg(szValue.at(y));
-				if(!query.exec(sz))
-					return(false);
-			}
-		}
-	}
-*/
 	return(true);
 }
 
@@ -721,15 +651,15 @@ void cMediaInfo::readTagV2(ID3v2::Tag* lpTag)
 		else if(!szID.compare("TDLY"))
 			m_iPlaylistDelay						= QString((*it)->toString().toCString()).toInt();
 		else if(!szID.compare("TDEN"))
-			m_EncodingTime							= str2TS((*it)->toString().toCString());
+			m_encodingTime							= str2TS((*it)->toString().toCString());
 		else if(!szID.compare("TDOR"))
-			m_OriginalReleaseTime					= str2TS((*it)->toString().toCString());
+			m_originalReleaseTime					= str2TS((*it)->toString().toCString());
 		else if(!szID.compare("TDRC"))
-			m_RecordingTime							= str2TS((*it)->toString().toCString());
+			m_recordingTime							= str2TS((*it)->toString().toCString());
 		else if(!szID.compare("TDRL"))
-			m_ReleaseTime							= str2TS((*it)->toString().toCString());
+			m_releaseTime							= str2TS((*it)->toString().toCString());
 		else if(!szID.compare("TDTG"))
-			m_TaggingTime							= str2TS((*it)->toString().toCString());
+			m_taggingTime							= str2TS((*it)->toString().toCString());
 		else if(!szID.compare("TSSE"))
 			m_szswhwSettings						= QString((*it)->toString().toCString()).split("\r\n");
 		else if(!szID.compare("TSOA"))
@@ -779,7 +709,11 @@ void cMediaInfo::readTagV2(ID3v2::Tag* lpTag)
 			szDescription	= lpPicture->description().toCString();
 
 			QByteArray	pictureData	= QByteArray(lpPicture->picture().data(), lpPicture->picture().size());
-			m_imageList.add(pictureData, "", (cImage::ImageType)t, szDescription);
+//			QPixmap		pixmap;
+//			pixmap.loadFromData(pictureData);
+//			m_imageList.add(pictureData, m_szFileName, (cImage::ImageType)t, szDescription);
+			QImage		image		= QImage::fromData(pictureData);
+			m_images.append(image);
 		}
 	}
 }
@@ -866,14 +800,26 @@ QString cMediaInfo::fileName()
 	return(m_szFileName);
 }
 
+qint64 cMediaInfo::fileSize()
+{
+	QFileInfo	fileInfo(m_szFileName);
+	return(fileInfo.size());
+}
+
+QDateTime cMediaInfo::fileDate()
+{
+	QFileInfo	fileInfo(m_szFileName);
+	return(fileInfo.created());
+}
+
 cMediaInfo::MEDIA_TYPE cMediaInfo::fileType1()
 {
-	return(m_FileType);
+	return(m_fileType);
 }
 
 QString cMediaInfo::fileType1Text()
 {
-	switch(m_FileType)
+	switch(m_fileType)
 	{
 	case MEDIA_TYPE_APE:
 		return("APE");
@@ -1217,27 +1163,27 @@ qint32 cMediaInfo::playlistDelay()
 
 QDateTime cMediaInfo::encodingTime()
 {
-	return(m_EncodingTime);
+	return(m_encodingTime);
 }
 
 QDateTime cMediaInfo::originalReleaseTime()
 {
-	return(m_OriginalReleaseTime);
+	return(m_originalReleaseTime);
 }
 
 QDateTime cMediaInfo::recordingTime()
 {
-	return(m_RecordingTime);
+	return(m_recordingTime);
 }
 
 QDateTime cMediaInfo::releaseTime()
 {
-	return(m_ReleaseTime);
+	return(m_releaseTime);
 }
 
 QDateTime cMediaInfo::taggingTime()
 {
-	return(m_TaggingTime);
+	return(m_taggingTime);
 }
 
 QStringList cMediaInfo::swhwSettings()

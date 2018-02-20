@@ -12,6 +12,9 @@ class cStringTime
 public:
 	explicit	cStringTime();
 	explicit	cStringTime(const qint32& iTime, const QString& szString);
+
+	qint32		time();
+	QString		string();
 protected:
 	qint32		m_iTime;
 	QString		m_szString;
@@ -27,6 +30,7 @@ class cStringTimeList : public QList<cStringTime *>
 public:
 	cStringTimeList();
 	cStringTime*	add(const qint32& iTime, const QString& szString);
+	QString			join();
 };
 
 

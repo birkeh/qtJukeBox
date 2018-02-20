@@ -69,13 +69,15 @@ public:
 	~cMediaInfo();
 
 	bool			readFromFile(const QString& szFileName);
-	bool			readFromDB(const QSqlDatabase& db);
-	bool			writeToDB(const QSqlDatabase& db);
+	bool			readFromDB();
+	bool			writeToDB();
 
 	bool			isValid();
 
 	//
 	QString			fileName();
+	qint64			fileSize();
+	QDateTime		fileDate();
 	MEDIA_TYPE		fileType1();
 	QString			fileType1Text();
 
@@ -179,7 +181,7 @@ protected:
 	bool			m_bProperties;
 	bool			m_bIsValid;
 	QString			m_szFileName;
-	MEDIA_TYPE		m_FileType;
+	MEDIA_TYPE		m_fileType;
 
 	qint32			m_iLength;
 	qint16			m_iBitrate;
@@ -231,7 +233,7 @@ protected:
 	QString			m_szComposer;							// TCOM
 	QString			m_szEncodedBy;							// TENC
 
-	// Derived and subjective properties frames
+	// Derrived and subjective properties frames
 	qint16			m_iBeatsPerMinute;						// TBPM
 //	qint16			m_iLength;								// TLEN
 	// TKEY
@@ -252,11 +254,11 @@ protected:
 	// Other text frames
 	QString			m_szOriginalFilename;					// TOFN
 	qint32			m_iPlaylistDelay;						// TDLY
-	QDateTime		m_EncodingTime;							// TDEN
-	QDateTime		m_OriginalReleaseTime;					// TDOR
-	QDateTime		m_RecordingTime;						// TDRC
-	QDateTime		m_ReleaseTime;							// TDRL
-	QDateTime		m_TaggingTime;							// TDTG
+	QDateTime		m_encodingTime;							// TDEN
+	QDateTime		m_originalReleaseTime;					// TDOR
+	QDateTime		m_recordingTime;						// TDRC
+	QDateTime		m_releaseTime;							// TDRL
+	QDateTime		m_taggingTime;							// TDTG
 	QStringList		m_szswhwSettings;						// TSSE
 	QString			m_szAlbumSortOrder;						// TSOA
 	QString			m_szPerformerSortOrder;					// TSOP
@@ -278,6 +280,7 @@ protected:
 	cTAGList		m_TAGPropertiesList;
 
 	cImageList		m_imageList;
+	QList<QImage>	m_images;
 
 	void			clear();
 
@@ -287,6 +290,8 @@ protected:
 	void			readTagProperties(TagLib::PropertyMap& tags);
 
 	QDateTime		str2TS(const QString& sz);
+
+	qint32			writeFilename();
 };
 
 #endif // CMEDIAINFO_H

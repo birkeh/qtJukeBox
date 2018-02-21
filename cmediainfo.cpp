@@ -11,6 +11,7 @@
 #include <QByteArray>
 #include <QImage>
 #include <QPixmap>
+#include <QBuffer>
 
 #include <QDebug>
 
@@ -109,8 +110,6 @@ void cMediaInfo::clear()
 	m_szUnsynchronizedLyricsLanguage		= "";
 	m_szUnsynchronizedLyricsDescription		= "";
 
-	m_imageList.clear();
-
 	m_szAlbum								= "";
 	m_szArtistList.clear();
 	m_szAlbumArtistList.clear();
@@ -130,8 +129,7 @@ void cMediaInfo::clear()
 	m_TAGAPEList.clear();
 	m_TAGPropertiesList.clear();
 
-	m_imageList.clear();
-	m_images.clear();
+	m_pixmapList.clear();
 }
 
 bool cMediaInfo::readFromFile(const QString& szFileName)
@@ -205,12 +203,12 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
-			m_iVersion									= lpAudioProperties->version();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_iBitsPerSample						= lpAudioProperties->bitsPerSample();
+			m_iVersion								= lpAudioProperties->version();
 		}
 		break;
 	}
@@ -218,17 +216,17 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 	{
 		lpASF	= new ASF::File(m_szFileName.toLocal8Bit().data());
 		TagLib::ASF::Tag*	lpTag					= lpASF->tag();
-		m_szTitle									= QString(lpTag->title().toCString());
-		szTmp										= QString(lpTag->artist().toCString());
+		m_szTitle									= QString::fromStdWString(lpTag->title().toWString());
+		szTmp										= QString::fromStdWString(lpTag->artist().toWString());
 		if(!szTmp.isEmpty() && m_bID3V1)
 			m_szArtistList							= szTmp.split("\n");
-		m_szAlbum									= QString(lpTag->album().toCString());
-		m_szComment									= QString(lpTag->comment().toCString());
-		szTmp										= QString(lpTag->genre().toCString());
+		m_szAlbum									= QString::fromStdWString(lpTag->album().toWString());
+		m_szComment									= QString::fromStdWString(lpTag->comment().toWString());
+		szTmp										= QString::fromStdWString(lpTag->genre().toWString());
 		if(!szTmp.isEmpty() && m_bID3V1)
 			m_szGenreList							= szTmp.split("\n");
-		m_szRating									= QString(lpTag->genre().toCString());
-		m_szCopyright								= QString(lpTag->copyright().toCString());
+		m_szRating									= QString::fromStdWString(lpTag->genre().toWString());
+		m_szCopyright								= QString::fromStdWString(lpTag->copyright().toWString());
 		m_iYear										= lpTag->year();
 		m_szTrackNumber								= QString("%1").arg(lpTag->track());
 
@@ -238,11 +236,11 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_bIsEncrypted								= lpAudioProperties->isEncrypted();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_bIsEncrypted							= lpAudioProperties->isEncrypted();
 		}
 		break;
 	}
@@ -257,12 +255,12 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_iSampleWidth								= lpAudioProperties->sampleWidth();
-			m_ullSampleFrames							= lpAudioProperties->sampleFrames();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_iSampleWidth							= lpAudioProperties->sampleWidth();
+			m_ullSampleFrames						= lpAudioProperties->sampleFrames();
 		}
 		break;
 	}
@@ -270,13 +268,13 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 	{
 		lpMP4	= new MP4::File(m_szFileName.toLocal8Bit().data());
 		TagLib::MP4::Tag*	lpTag					= lpMP4->tag();
-		m_szTitle									= QString(lpTag->title().toCString());
-		szTmp										= QString(lpTag->artist().toCString());
+		m_szTitle									= QString::fromStdWString(lpTag->title().toWString());
+		szTmp										= QString::fromStdWString(lpTag->artist().toWString());
 		if(!szTmp.isEmpty() && m_bID3V1)
 			m_szArtistList							= szTmp.split("\n");
-		m_szAlbum									= QString(lpTag->album().toCString());
-		m_szComment									= QString(lpTag->comment().toCString());
-		szTmp										= QString(lpTag->genre().toCString());
+		m_szAlbum									= QString::fromStdWString(lpTag->album().toWString());
+		m_szComment									= QString::fromStdWString(lpTag->comment().toWString());
+		szTmp										= QString::fromStdWString(lpTag->genre().toWString());
 		if(!szTmp.isEmpty() && m_bID3V1)
 			m_szGenreList							= szTmp.split("\n");
 		m_iYear										= lpTag->year();
@@ -288,12 +286,12 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
-			m_bIsEncrypted								= lpAudioProperties->isEncrypted();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_iBitsPerSample						= lpAudioProperties->bitsPerSample();
+			m_bIsEncrypted							= lpAudioProperties->isEncrypted();
 		}
 		break;
 	}
@@ -308,16 +306,16 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_iVersion									= lpAudioProperties->mpcVersion();
-			m_ullSampleFrames							= lpAudioProperties->sampleFrames();
-			m_iTrackGain								= lpAudioProperties->trackGain();
-			m_iAlbumGain								= lpAudioProperties->albumGain();
-			m_iTrackPeak								= lpAudioProperties->trackPeak();
-			m_iAlbumPeak								= lpAudioProperties->albumPeak();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_iVersion								= lpAudioProperties->mpcVersion();
+			m_ullSampleFrames						= lpAudioProperties->sampleFrames();
+			m_iTrackGain							= lpAudioProperties->trackGain();
+			m_iAlbumGain							= lpAudioProperties->albumGain();
+			m_iTrackPeak							= lpAudioProperties->trackPeak();
+			m_iAlbumPeak							= lpAudioProperties->albumPeak();
 		}
 		break;
 	}
@@ -334,11 +332,11 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_iLayer									= lpAudioProperties->layer();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_iLayer								= lpAudioProperties->layer();
 			switch(lpAudioProperties->version())
 			{
 			case MPEG::Header::Version1:
@@ -351,24 +349,24 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 				m_iVersion	= 25;
 				break;
 			}
-			m_bProtectionEnabled						= lpAudioProperties->protectionEnabled();
+			m_bProtectionEnabled					= lpAudioProperties->protectionEnabled();
 			switch(lpAudioProperties->channelMode())
 			{
 			case MPEG::Header::Stereo:
-				m_channelMode							= CHANNEL_MODE_STEREO;
+				m_channelMode						= CHANNEL_MODE_STEREO;
 				break;
 			case MPEG::Header::JointStereo:
-				m_channelMode							= CHANNEL_MODE_JOINTSTEREO;
+				m_channelMode						= CHANNEL_MODE_JOINTSTEREO;
 				break;
 			case MPEG::Header::DualChannel:
-				m_channelMode							= CHANNEL_MODE_DUALMONO;
+				m_channelMode						= CHANNEL_MODE_DUALMONO;
 				break;
 			case MPEG::Header::SingleChannel:
-				m_channelMode							= CHANNEL_MODE_MONO;
+				m_channelMode						= CHANNEL_MODE_MONO;
 				break;
 			}
-			m_bIsCopyrighted							= lpAudioProperties->isCopyrighted();
-			m_bIsOriginal								= lpAudioProperties->isOriginal();
+			m_bIsCopyrighted						= lpAudioProperties->isCopyrighted();
+			m_bIsOriginal							= lpAudioProperties->isOriginal();
 		}
 		break;
 	}
@@ -383,12 +381,12 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
-			m_iVersion									= lpAudioProperties->ttaVersion();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_iBitsPerSample						= lpAudioProperties->bitsPerSample();
+			m_iVersion								= lpAudioProperties->ttaVersion();
 		}
 		break;
 	}
@@ -403,13 +401,13 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_iBitsPerSample							= lpAudioProperties->bitsPerSample();
-			m_ullSampleFrames							= lpAudioProperties->sampleFrames();
-			m_iVersion									= lpAudioProperties->version();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_iBitsPerSample						= lpAudioProperties->bitsPerSample();
+			m_ullSampleFrames						= lpAudioProperties->sampleFrames();
+			m_iVersion								= lpAudioProperties->version();
 		}
 		break;
 	}
@@ -423,12 +421,12 @@ bool cMediaInfo::readFromFile(const QString& szFileName)
 
 		if(lpAudioProperties)
 		{
-			m_iLength									= lpAudioProperties->length();
-			m_iBitrate									= lpAudioProperties->bitrate();
-			m_iSampleRate								= lpAudioProperties->sampleRate();
-			m_iChannels									= lpAudioProperties->channels();
-			m_iSampleWidth								= lpAudioProperties->sampleWidth();
-			m_ullSampleFrames							= lpAudioProperties->sampleFrames();
+			m_iLength								= lpAudioProperties->length();
+			m_iBitrate								= lpAudioProperties->bitrate();
+			m_iSampleRate							= lpAudioProperties->sampleRate();
+			m_iChannels								= lpAudioProperties->channels();
+			m_iSampleWidth							= lpAudioProperties->sampleWidth();
+			m_ullSampleFrames						= lpAudioProperties->sampleFrames();
 		}
 		break;
 	}
@@ -581,13 +579,48 @@ qint32 cMediaInfo::writeFilename()
 		return(query.value("id").toInt());
 
 	return(-1);
-
-//	cImageList		images();
 }
 
 bool cMediaInfo::writeToDB()
 {
+	QSqlQuery	query;
 	qint32		idFile	= writeFilename();
+
+	if(idFile == -1)
+		return(false);
+
+	query.prepare("DELETE FROM image WHERE fileID=:fileID;");
+	query.bindValue(":fileID", idFile);
+
+	if(!query.exec())
+	{
+		myDebug << query.lastError().text();
+		return(false);
+	}
+
+	for(int x = 0;x < m_pixmapList.count();x++)
+	{
+		cPixmap	pixmap	= m_pixmapList.at(x);
+
+		query.prepare("INSERT INTO image (fileID, fileName, imageType, image) VALUES (:fileID, :fileName, :imageType, :image);");
+
+		query.bindValue(":fileID", idFile);
+		query.bindValue(":fileName", pixmap.fileName());
+		query.bindValue(":imageType", (qint16)pixmap.imageType());
+		query.bindValue(":description", pixmap.description());
+
+		QByteArray	baImage;
+		QBuffer		buffer(&baImage);
+		buffer.open(QIODevice::WriteOnly);
+		m_pixmapList.at(x).save(&buffer, "JPG");
+		query.bindValue(":image", baImage);
+
+		if(!query.exec())
+		{
+			myDebug << query.lastError().text();
+			return(false);
+		}
+	}
 
 	return(true);
 }
@@ -595,16 +628,16 @@ bool cMediaInfo::writeToDB()
 void cMediaInfo::readTagV1(ID3v1::Tag* lpTag)
 {
 	QString	szTmp;
-	m_szAlbum				= QString(lpTag->album().toCString());
-	szTmp					= QString(lpTag->artist().toCString());
+	m_szAlbum				= QString::fromStdWString(lpTag->album().toWString());
+	szTmp					= QString::fromStdWString(lpTag->artist().toWString());
 	if(!szTmp.isEmpty())
 		m_szArtistList		= szTmp.split("\n");
-	m_szAlbum				= QString(lpTag->album().toCString());
-	m_szComment				= QString(lpTag->comment().toCString());
-	szTmp					= QString(lpTag->genre().toCString());
+	m_szAlbum				= QString::fromStdWString(lpTag->album().toWString());
+	m_szComment				= QString::fromStdWString(lpTag->comment().toWString());
+	szTmp					= QString::fromStdWString(lpTag->genre().toWString());
 	if(!szTmp.isEmpty())
 		m_szGenreList		= szTmp.split("\n");
-	m_szTitle				= QString(lpTag->title().toCString());
+	m_szTitle				= QString::fromStdWString(lpTag->title().toWString());
 	m_szTrackNumber			= QString("%1").arg(lpTag->track());
 	m_iYear					= lpTag->year();
 }
@@ -620,103 +653,103 @@ void cMediaInfo::readTagV2(ID3v2::Tag* lpTag)
 		QString	szID	= QString("%1").arg((*it)->frameID().data()).left(4);
 
 		if(!szID.compare("TIT1"))
-			m_szContentGroupDescription				= (*it)->toString().toCString();
+			m_szContentGroupDescription				= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TIT2"))
-			m_szTitle								= (*it)->toString().toCString();
+			m_szTitle								= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TIT3"))
-			m_szSubTitle							= (*it)->toString().toCString();
+			m_szSubTitle							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TALB"))
-			m_szAlbum								= (*it)->toString().toCString();
+			m_szAlbum								= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TOAL"))
-			m_szOriginalAlbum						= (*it)->toString().toCString();
+			m_szOriginalAlbum						= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TRCK"))
-			m_szTrackNumber							= (*it)->toString().toCString();
+			m_szTrackNumber							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TPOS"))
-			m_szPartOfSet							= (*it)->toString().toCString();
+			m_szPartOfSet							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TSST"))
-			m_szSubTitleOfSet						= (*it)->toString().toCString();
+			m_szSubTitleOfSet						= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TSRC"))
-			m_szInternationalStandardRecordingCode	= (*it)->toString().toCString();
+			m_szInternationalStandardRecordingCode	= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TPE1"))
-			m_szLeadArtist							= (*it)->toString().toCString();
+			m_szLeadArtist							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TPE2"))
-			m_szBand								= (*it)->toString().toCString();
+			m_szBand								= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TPE3"))
-			m_szConductor							= (*it)->toString().toCString();
+			m_szConductor							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TPE4"))
-			m_szInterpret							= QString((*it)->toString().toCString()).split("\r\n");
+			m_szInterpret							= QString::fromStdWString((*it)->toString().toWString()).split("\r\n");
 		else if(!szID.compare("TOPE"))
-			m_szOriginalArtist						= (*it)->toString().toCString();
+			m_szOriginalArtist						= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TEXT"))
-			m_szTextWriter							= (*it)->toString().toCString();
+			m_szTextWriter							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TOLY"))
-			m_szOriginalTextWriter					= (*it)->toString().toCString();
+			m_szOriginalTextWriter					= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TCOM"))
-			m_szComposer							= (*it)->toString().toCString();
+			m_szComposer							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TENC"))
-			m_szEncodedBy							= (*it)->toString().toCString();
+			m_szEncodedBy							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TBPM"))
-			m_iBeatsPerMinute						= QString((*it)->toString().toCString()).toInt();
+			m_iBeatsPerMinute						= QString::fromStdWString((*it)->toString().toWString()).toInt();
 		else if(!szID.compare("TLEN") && m_iLength == 0)
-			m_iLength								= QString((*it)->toString().toCString()).toInt();
+			m_iLength								= QString::fromStdWString((*it)->toString().toWString()).toInt();
 		else if(!szID.compare("TLAN"))
-				m_szLanguage						= QString((*it)->toString().toCString()).split("\r\n");
+				m_szLanguage						= QString::fromStdWString((*it)->toString().toWString()).split("\r\n");
 		else if(!szID.compare("TCON"))
-				m_szContentType						= QString((*it)->toString().toCString()).split("\r\n");
+				m_szContentType						= QString::fromStdWString((*it)->toString().toWString()).split("\r\n");
 		else if(!szID.compare("TFLT"))
-			m_szFileType							= (*it)->toString().toCString();
+			m_szFileType							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TMED"))
-				m_szMediaType						= QString((*it)->toString().toCString()).split("\r\n");
+				m_szMediaType						= QString::fromStdWString((*it)->toString().toWString()).split("\r\n");
 		else if(!szID.compare("TMOO"))
-			m_szMood								= (*it)->toString().toCString();
+			m_szMood								= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TCOP"))
-			m_szCopyright							= (*it)->toString().toCString();
+			m_szCopyright							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TPRO"))
-			m_szProducedNotice						= (*it)->toString().toCString();
+			m_szProducedNotice						= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TPUB"))
-			m_szPublisher							= (*it)->toString().toCString();
+			m_szPublisher							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TOWN"))
-			m_szFileOwner							= (*it)->toString().toCString();
+			m_szFileOwner							= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TRSN"))
-			m_szInternetRadioStationName			= (*it)->toString().toCString();
+			m_szInternetRadioStationName			= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TRSO"))
-			m_szInternetRadioStationOwner			= (*it)->toString().toCString();
+			m_szInternetRadioStationOwner			= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TOFN"))
-			m_szOriginalFilename					= (*it)->toString().toCString();
+			m_szOriginalFilename					= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TDLY"))
-			m_iPlaylistDelay						= QString((*it)->toString().toCString()).toInt();
+			m_iPlaylistDelay						= QString::fromStdWString((*it)->toString().toWString()).toInt();
 		else if(!szID.compare("TDEN"))
-			m_encodingTime							= str2TS((*it)->toString().toCString());
+			m_encodingTime							= str2TS(QString::fromStdWString((*it)->toString().toWString()));
 		else if(!szID.compare("TDOR"))
-			m_originalReleaseTime					= str2TS((*it)->toString().toCString());
+			m_originalReleaseTime					= str2TS(QString::fromStdWString((*it)->toString().toWString()));
 		else if(!szID.compare("TDRC"))
-			m_recordingTime							= str2TS((*it)->toString().toCString());
+			m_recordingTime							= str2TS(QString::fromStdWString((*it)->toString().toWString()));
 		else if(!szID.compare("TDRL"))
-			m_releaseTime							= str2TS((*it)->toString().toCString());
+			m_releaseTime							= str2TS(QString::fromStdWString((*it)->toString().toWString()));
 		else if(!szID.compare("TDTG"))
-			m_taggingTime							= str2TS((*it)->toString().toCString());
+			m_taggingTime							= str2TS(QString::fromStdWString((*it)->toString().toWString()));
 		else if(!szID.compare("TSSE"))
-			m_szswhwSettings						= QString((*it)->toString().toCString()).split("\r\n");
+			m_szswhwSettings						= QString(QString::fromStdWString((*it)->toString().toWString())).split("\r\n");
 		else if(!szID.compare("TSOA"))
-			m_szAlbumSortOrder						= (*it)->toString().toCString();
+			m_szAlbumSortOrder						= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TSOP"))
-			m_szPerformerSortOrder					= (*it)->toString().toCString();
+			m_szPerformerSortOrder					= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("TSOT"))
-			m_szTitleSortOrder						= (*it)->toString().toCString();
+			m_szTitleSortOrder						= QString::fromStdWString((*it)->toString().toWString());
 		else if(!szID.compare("SYLT"))
 		{
 			TagLib::ID3v2::SynchronizedLyricsFrame*	lpLyrics	= static_cast<TagLib::ID3v2::SynchronizedLyricsFrame *> (*it);
 
 			m_szSynchronizedLyricsLanguage			= QString(lpLyrics->language().data()).left(3);
 			String::Type	type					= lpLyrics->textEncoding();
-			m_szSynchronizedLyricsDescription		= lpLyrics->description().toCString();
+			m_szSynchronizedLyricsDescription		= QString::fromStdWString(lpLyrics->description().toWString());
 
 			TagLib::ID3v2::SynchronizedLyricsFrame::SynchedTextList	list	= lpLyrics->synchedText();
 
 			for(ID3v2::SynchronizedLyricsFrame::SynchedTextList::ConstIterator it1 = list.begin(); it1 != list.end();it1++)
 			{
 				ID3v2::SynchronizedLyricsFrame::SynchedText	t	= *(it1);
-				m_szSynchronizedLyrics.add(t.time, QString(t.text.toCString()));
+				m_szSynchronizedLyrics.add(t.time, QString::fromStdWString(t.text.toWString()));
 			}
 		}
 		else if(!szID.compare("USLT"))
@@ -725,8 +758,8 @@ void cMediaInfo::readTagV2(ID3v2::Tag* lpTag)
 
 			m_szUnsynchronizedLyricsLanguage		= QString(lpLyrics->language().data()).left(3);
 			String::Type	type					= lpLyrics->textEncoding();
-			m_szUnsynchronizedLyricsDescription		= lpLyrics->description().toCString();
-			QString			szText					= lpLyrics->text().toCString();
+			m_szUnsynchronizedLyricsDescription		= QString::fromStdWString(lpLyrics->description().toWString());
+			QString			szText					= QString::fromStdWString(lpLyrics->text().toWString());
 			if(szText.contains("\r\n"))
 				m_szUnsynchronizedLyrics			= szText.split("\r\n");
 			else if(szText.contains("\r"))
@@ -741,10 +774,10 @@ void cMediaInfo::readTagV2(ID3v2::Tag* lpTag)
 			TagLib::ID3v2::AttachedPictureFrame*		lpPicture	= static_cast<TagLib::ID3v2::AttachedPictureFrame *> (*it);
 			TagLib::ID3v2::AttachedPictureFrame::Type	t			= lpPicture->type();
 			QString	szDescription;
-			szDescription	= lpPicture->description().toCString();
+			szDescription	= QString::fromStdWString(lpPicture->description().toWString());
 
 			QByteArray	pictureData	= QByteArray(lpPicture->picture().data(), lpPicture->picture().size());
-			m_imageList.add(pictureData, m_szFileName, (cImage::ImageType)t, szDescription);
+			m_pixmapList.add(pictureData, m_szFileName, (cPixmap::ImageType)t, szDescription);
 		}
 	}
 }
@@ -753,8 +786,8 @@ void cMediaInfo::readTagAPE(APE::Tag* lpTag)
 {
 	for(APE::ItemListMap::ConstIterator it = lpTag->itemListMap().begin();it != lpTag->itemListMap().end();++it)
 	{
-		QString szID	= (*it).first.toCString();
-		QString	szVal	= (*it).second.toString().toCString();
+		QString szID	= QString::fromStdWString((*it).first.toWString());
+		QString	szVal	= QString::fromStdWString((*it).second.toString().toWString());
 		if(!szID.isEmpty() && !szVal.isEmpty())
 			m_TAGAPEList.add(szID.left(4), szVal);
 	}
@@ -767,12 +800,12 @@ void cMediaInfo::readTagProperties(TagLib::PropertyMap& tags)
 	for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i)
 	{
 		QStringList	szValue;
-		szID	= i->first.toCString();
+		szID	= QString::fromStdWString(i->first.toWString());
 		if(!szID.isEmpty())
 		{
 			for(TagLib::StringList::ConstIterator j = i->second.begin(); j != i->second.end(); ++j)
 			{
-				QString	sz = QString((*j).toCString());
+				QString	sz = QString::fromStdWString((*j).toWString());
 				if(!sz.isEmpty())
 				{
 					if(!szID.compare("LYRICS"))
@@ -1247,9 +1280,9 @@ QStringList cMediaInfo::unsynchronizedLyrics()
 	return(m_szUnsynchronizedLyrics);
 }
 
-cImageList cMediaInfo::images()
+cPixmapList cMediaInfo::pixmaps()
 {
-	return(m_imageList);
+	return(m_pixmapList);
 }
 
 /*

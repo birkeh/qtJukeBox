@@ -34,7 +34,7 @@
 
 #include "ctag.h"
 #include "cstring.h"
-#include "cimage.h"
+#include "cpixmap.h"
 
 
 using namespace TagLib;
@@ -169,7 +169,7 @@ public:
 	cStringTimeList	synchronizedLyrics();					// SYLT
 	QStringList		unsynchronizedLyrics();					// USLT
 
-	cImageList		images();								// APIC
+	cPixmapList		pixmaps();								// APIC
 signals:
 	
 public slots:
@@ -279,8 +279,7 @@ protected:
 	cTAGList		m_TAGAPEList;
 	cTAGList		m_TAGPropertiesList;
 
-	cImageList		m_imageList;
-	QList<QImage>	m_images;
+	cPixmapList		m_pixmapList;
 
 	void			clear();
 

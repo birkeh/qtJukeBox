@@ -1,12 +1,12 @@
-#ifndef CIMAGE_H
-#define CIMAGE_H
+#ifndef CPIXMAP_H
+#define CPIXMAP_H
 
-#include <QImage>
+#include <QPixmap>
 #include <QList>
 #include <QMetaType>
 
 
-class cImage : public QImage
+class cPixmap : public QPixmap
 {
 public:
 	enum	ImageType
@@ -33,8 +33,12 @@ public:
 		BandLogo			= 0x13,
 		PublisherLogo		= 0x14
 	};
-	cImage();
-	cImage(const QByteArray& array, const QString& szFileName, const cImage::ImageType& imageType, const QString& szDescription);
+	cPixmap();
+	cPixmap(const QByteArray& array, const QString& szFileName, const cPixmap::ImageType& imageType, const QString& szDescription);
+
+	QString		fileName();
+	ImageType	imageType();
+	QString		description();
 protected:
 	QString		m_szFileName;
 	ImageType	m_ImageType;
@@ -46,13 +50,13 @@ public slots:
 
 };
 
-Q_DECLARE_METATYPE(cImage)
+Q_DECLARE_METATYPE(cPixmap)
 
-class cImageList : public QList<cImage>
+class cPixmapList : public QList<cPixmap>
 {
 public:
-	cImageList();
-	cImage*	add(const QByteArray& array, const QString& szFileName, const cImage::ImageType& imageType, const QString& szDescription);
+	cPixmapList();
+	cPixmap add(const QByteArray& array, const QString& szFileName, const cPixmap::ImageType& imageType, const QString& szDescription);
 };
 
-#endif // CIMAGE_H
+#endif // CPIXMAP_H

@@ -3,11 +3,12 @@
 #include "cmainwindow.h"
 #include "ui_cmainwindow.h"
 
-#include "cdatabase.h"
 #include "cmediainfo.h"
 
+#include <QTime>
 
-void addFile(const QString& szFile)
+
+void cMainWindow::addFile(const QString& szFile)
 {
 	if(szFile.isEmpty())
 		return;
@@ -15,11 +16,15 @@ void addFile(const QString& szFile)
 	cMediaInfo*	lpMediaInfo     = new cMediaInfo;
 	lpMediaInfo->readFromFile(szFile);
 	if(lpMediaInfo->isValid())
+	{
+		m_lpDB->getDB().transaction();
 		lpMediaInfo->writeToDB();
+		m_lpDB->getDB().commit();
+	}
 	delete lpMediaInfo;
 }
 
-void addPath(const QString& szPath)
+void cMainWindow::addPath(const QString& szPath)
 {
 	QDir		Dir(szPath);
 	QStringList	Dirs	= Dir.entryList(QDir::Dirs);
@@ -51,22 +56,27 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	if(settings.value("application/version", QVariant(0.0)).toDouble() == 0.0)
 		initSettings();
 
-	cDatabase*	lpDatabase;
-	lpDatabase	= new cDatabase(this);
+	m_lpDB	= new cDatabase(this);
+
+	QTime t;
+
 
 //	bool bRet;
 //	bRet = lpDatabase->getDB().transaction();
-//	addPath("C:/Users/vet0572/Music");
-	addPath("C:/Users/birkeh/Music");
+	t.start();
+	addPath("C:/Users/vet0572/Music");
+	qDebug() << t.elapsed();
+//	addPath("C:/Users/birkeh/Music");
 //	bRet = lpDatabase->getDB().commit();
 
-	ui->setupUi(this);
+//	addFile("C:/Users/vet0572/Music/Amy MacDonald/Under Stars (Deluxe)/01 - Dream On.mp3");
 
-	delete (lpDatabase);
+	ui->setupUi(this);
 }
 
 cMainWindow::~cMainWindow()
 {
+	delete m_lpDB;
 	delete ui;
 }
 

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "cdatabase.h"
+
 
 namespace Ui
 {
@@ -18,8 +20,11 @@ public:
 	~cMainWindow();
 	
 private:
-	Ui::cMainWindow *ui;
+	Ui::cMainWindow*	ui;
+	cDatabase*			m_lpDB;
 
+	void				addFile(const QString& szFile);
+	void				addPath(const QString& szPath);
 protected:
 	void	initSettings();
 };

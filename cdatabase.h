@@ -25,7 +25,7 @@ protected:
 	qint16			m_iVersion;
 
 	void		init();
-	int			createDB();
+	int			initDB();
 };
 
 #endif // CDATABASE_H

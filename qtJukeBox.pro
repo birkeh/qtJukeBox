@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     cdatabase.cpp \
     cstring.cpp \
     common.cpp \
-    cpixmap.cpp
+    cpixmap.cpp \
+    cmusicviewitemdelegate.cpp \
+    calbum.cpp
 
 HEADERS  += cmainwindow.h \
     cmediainfo.h \
@@ -31,7 +33,9 @@ HEADERS  += cmainwindow.h \
     cdatabase.h \
     cstring.h \
     common.h \
-    cpixmap.h
+    cpixmap.h \
+    cmusicviewitemdelegate.h \
+    calbum.h
 
 FORMS    += cmainwindow.ui
 

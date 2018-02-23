@@ -180,8 +180,8 @@ void cMainWindow::displayDB()
 	ui->m_lpMusicListOriginal->setColumnHidden(1, true);
 	ui->m_lpMusicListNew->setColumnHidden(0, true);
 
-	QString					szOldLeadArtist		= "";
-	QString					szOldAlbum			= "";
+	QString					szOldLeadArtist		= "OldLeadArtist";
+	QString					szOldAlbum			= "OldAlbum";
 	QList<QStandardItem*>	lpLeadArtistItem;
 	QList<QStandardItem*>	lpAlbumItem;
 

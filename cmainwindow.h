@@ -2,6 +2,8 @@
 #define CMAINWINDOW_H
 
 
+#include "cdatabase.h"
+
 #include "calbum.h"
 
 #include <QMainWindow>
@@ -10,8 +12,6 @@
 #include <QItemSelection>
 
 #include <QTreeView>
-
-#include <QSqlDatabase>
 
 
 namespace Ui
@@ -29,9 +29,7 @@ public:
 	
 private:
 	Ui::cMainWindow*	ui;
-	QSqlDatabase		m_DB;
-	qint16				m_iVersion;
-
+	cDatabase*			m_lpDB;
 	QStandardItemModel*	m_lpMusicListModel;
 	bool				m_bProcessing;
 
@@ -40,7 +38,6 @@ private:
 	void				addFile(const QString& szFile);
 	void				addPath(const QString& szPath);
 
-	bool				initDB();
 	void				loadDB();
 	void				displayDB();
 

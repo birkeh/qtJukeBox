@@ -13,10 +13,6 @@
 #include <QScrollBar>
 
 #include <QTime>
-#include <QDir>
-
-#include <QSqlQuery>
-#include <QSqlError>
 
 
 void cMainWindow::addFile(const QString& szFile)
@@ -25,15 +21,13 @@ void cMainWindow::addFile(const QString& szFile)
 		return;
 
 	cMediaInfo*	lpMediaInfo     = new cMediaInfo;
-	lpMediaInfo->importFromFile(szFile);
-/*
+	lpMediaInfo->readFromFile(szFile);
 	if(lpMediaInfo->isValid())
 	{
 		m_lpDB->getDB().transaction();
 		lpMediaInfo->writeToDB();
 		m_lpDB->getDB().commit();
 	}
-*/
 	delete lpMediaInfo;
 }
 
@@ -63,6 +57,7 @@ void cMainWindow::addPath(const QString& szPath)
 cMainWindow::cMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::cMainWindow),
+	m_lpDB(0),
 	m_lpMusicListModel(0),
 	m_bProcessing(false)
 {
@@ -72,6 +67,8 @@ cMainWindow::cMainWindow(QWidget *parent) :
 
 	if(settings.value("application/version", QVariant(0.0)).toDouble() == 0.0)
 		initSettings();
+
+	m_lpDB	= new cDatabase(this);
 
 	m_lpMusicListModel	= new QStandardItemModel(0, 3);
 	ui->m_lpMusicListOriginal->setModel(m_lpMusicListModel);
@@ -100,26 +97,17 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	connect(ui->m_lpMusicListOriginal->verticalScrollBar(), &QScrollBar::valueChanged, this, &cMainWindow::onScrollbarValueChangedOriginal);
 	connect(ui->m_lpMusicListNew->verticalScrollBar(), &QScrollBar::valueChanged, this, &cMainWindow::onScrollbarValueChangedNew);
 
-	initDB();
-	loadDB();
-	displayDB();
+//	loadDB();
+//	displayDB();
 
-//	QTime	time;
-//	time.start();
-//	addPath("C:/Users/birkeh/Music");
-//	addPath("C:/Users/vet0572/Music");
-//	qDebug() << time.elapsed();
 //	addPath("C:/Users/vet0572/Music");
 //	addPath("C:/Users/birkeh/Music");
-	addFile("C:/Users/vet0572/Music/Amy MacDonald/Under Stars (Deluxe)/01 - Dream On.mp3");
-	addFile("C:/Users/vet0572/Music/Amy MacDonald/Under Stars (Deluxe)/01 - Dream On.mp3");
+//	addFile("C:/Users/vet0572/Music/Amy MacDonald/Under Stars (Deluxe)/01 - Dream On.mp3");
 }
 
 cMainWindow::~cMainWindow()
 {
-	if(m_DB.isOpen())
-		m_DB.close();
-
+	delete m_lpDB;
 	delete ui;
 }
 
@@ -134,141 +122,6 @@ void cMainWindow::initSettings()
 	settings.setValue("database/database", "qtjukebox.db");
 
 	dir.mkdir(settings.value("application/data").toString());
-}
-
-bool cMainWindow::initDB()
-{
-	QDir		d;
-	QString		szDB;
-	QSettings	settings;
-
-	m_DB	= QSqlDatabase::addDatabase("QSQLITE");
-	szDB	= settings.value("application/data").toString()+QDir::separator()+settings.value("database/database").toString();
-	m_DB.setDatabaseName(szDB);
-	if(!m_DB.open())
-	{
-		myDebug << m_DB.lastError().text();
-		return(false);
-	}
-
-	QSqlQuery	query(m_DB);
-
-	if(!m_DB.tables().contains("version"))
-	{
-		if(!query.exec("CREATE TABLE version\n"
-					   "(version integer)"))
-		{
-			myDebug << query.lastError().text();
-			return(false);
-		}
-
-		if(!query.exec("INSERT INTO version (version) VALUES (1)"))
-		{
-			myDebug << query.lastError().text();
-			return(false);
-		}
-	}
-
-	if(!m_DB.tables().contains("file"))
-	{
-		if(!query.exec("CREATE TABLE file "
-					   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-					   " fileName TEXT, "
-					   " fileSize INTEGER, "
-					   " fileDate DATE, "
-					   " fileType1 INTEGER, "
-					   " fileType TEXT, "
-					   " length1 INTEGER, "
-					   " length INTEGER, "
-					   " bitrate INTEGER, "
-					   " sampleRate INTEGER, "
-					   " channels INTEGER, "
-					   " bitsPerSample INTEGER, "
-					   " layer INTEGER, "
-					   " version INTEGER, "
-					   " sampleWidth INTEGER, "
-					   " sampleFrames INTEGER, "
-					   " isEncrypted BOOL, "
-					   " trackGain INTEGER, "
-					   " albumGain INTEGER, "
-					   " trackPeak INTEGER, "
-					   " albumPeak INTEGER, "
-					   " protectionEnabled BOOL, "
-					   " channelMode INTEGER, "
-					   " isCopyrighted BOOL, "
-					   " isOriginal BOOL, "
-					   " album TEXT, "
-					   " title TEXT, "
-					   " copyright TEXT, "
-					   " tracknumber TEXT, "
-					   " contentGroupDescription TEXT, "
-					   " subTitle TEXT, "
-					   " originalAlbum TEXT, "
-					   " partOfSet TEXT, "
-					   " subTitleOfSet TEXT, "
-					   " internationalStandardRecordingCode TEXT, "
-					   " leadArtist TEXT, "
-					   " band TEXT, "
-					   " conductor TEXT, "
-					   " interpret TEXT, "
-					   " originalArtist TEXT, "
-					   " textWriter TEXT, "
-					   " originalTextWriter TEXT, "
-					   " composer TEXT, "
-					   " encodedBy TEXT, "
-					   " beatsPerMinute INTEGER, "
-					   " language TEXT, "
-					   " contentType TEXT, "
-					   " mediaType TEXT, "
-					   " mood TEXT, "
-					   " producedNotice TEXT, "
-					   " publisher TEXT, "
-					   " fileOwner TEXT, "
-					   " internetRadioStationName TEXT, "
-					   " internetRadioStationOwner TEXT, "
-					   " originalFilename TEXT, "
-					   " playlistDelay TEXT, "
-					   " encodingTime INTEGER, "
-					   " originalReleaseTime DATE, "
-					   " recordingTime DATE, "
-					   " releaseTime DATE, "
-					   " taggingTime DATE, "
-					   " swhwSettings TEXT, "
-					   " albumSortOrder TEXT, "
-					   " performerSortOrder TEXT, "
-					   " titleSortOrder TEXT, "
-					   " synchronizedLyrics TEXT, "
-					   " unsynchronizedLyrics TEXT)"))
-		{
-			myDebug << query.lastError().text();
-			return(false);
-		}
-	}
-
-	if(!m_DB.tables().contains("image"))
-	{
-		if(!query.exec("CREATE TABLE image ("
-						"   id          INTEGER PRIMARY KEY,"
-						"   fileID      INTEGER REFERENCES file(id),"
-						"   fileName    STRING,"
-						"   imageType   INTEGER,"
-						"   description STRING,"
-						"   image       BLOB);"))
-		{
-			myDebug << query.lastError().text();
-			return(false);
-		}
-	}
-
-	QSqlQuery	version("SELECT version FROM version", m_DB);
-	if(!version.exec())
-		return(false);
-	else
-	{
-		version.first();
-		m_iVersion = version.value("version").toInt();
-	}
-	return(true);
 }
 
 void cMainWindow::loadDB()

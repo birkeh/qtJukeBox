@@ -32,6 +32,8 @@
 #include <taglib/synchronizedlyricsframe.h>
 #include <taglib/unsynchronizedlyricsframe.h>
 
+#include <taglib/fileref.h>
+
 #include "ctag.h"
 #include "cstring.h"
 #include "cpixmap.h"

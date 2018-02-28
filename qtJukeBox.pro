@@ -12,9 +12,15 @@ TARGET = qtJukeBox
 TEMPLATE = app
 
 
+win32 {
 INCLUDEPATH += "C:/dev/3rdParty/taglib/include"
 DEPENDPATH += "C:/dev/3rdParty/taglib/include"
 LIBS += "C:/dev/3rdParty/taglib/lib/libtag.dll.a"
+}
+
+unix {
+LIBS	+= -ltag
+}
 
 SOURCES += main.cpp\
         cmainwindow.cpp \
@@ -38,5 +44,3 @@ HEADERS  += cmainwindow.h \
     calbum.h
 
 FORMS    += cmainwindow.ui
-
-#LIBS	+= -ltaglib

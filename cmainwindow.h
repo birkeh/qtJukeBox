@@ -5,6 +5,7 @@
 #include "cdatabase.h"
 
 #include "calbum.h"
+#include "ctrack.h"
 
 #include <QMainWindow>
 

@@ -23,12 +23,14 @@ qDebug() << szFile;
 
 	cMediaInfo*	lpMediaInfo     = new cMediaInfo;
 	lpMediaInfo->readFromFile(szFile);
+
 	if(lpMediaInfo->isValid())
 	{
 		m_lpDB->getDB().transaction();
 		lpMediaInfo->writeToDB();
 		m_lpDB->getDB().commit();
 	}
+
 	delete lpMediaInfo;
 }
 
@@ -105,7 +107,7 @@ cMainWindow::cMainWindow(QWidget *parent) :
 //	addPath("C:/Users/vet0572/Music");
 //	addPath("C:/Temp/Musik");
 //	addPath("C:/Users/birkeh/Music");
-//	addFile("C:/Users/vet0572/Music/Amy MacDonald/Under Stars (Deluxe)/01 - Dream On.mp3");
+//	addFile("C:/Users/vet0572/Music/Amy MacDonald/Life In A Beautiful Light/CD1/Amy Macdonald - Life In A Beautiful Light - 18 - Slow It Down (Singalong Instrumental Version).mp3");
 }
 
 cMainWindow::~cMainWindow()
@@ -135,7 +137,7 @@ void cMainWindow::loadDB()
 	QString		szAlbum;
 	QString		szTitle;
 	qint16		iTrackNumber;
-	qint16		iPartOfSet;
+	QString		szPartOfSet;
 	QString		szLeadArtist;
 	QString		szBand;
 	QString		szComposer;
@@ -155,7 +157,7 @@ void cMainWindow::loadDB()
 		szAlbum			= query.value("album").toString();
 		szTitle			= query.value("title").toString();
 		iTrackNumber	= query.value("trackNumber").toInt();
-		iPartOfSet		= query.value("partOfSet").toInt();
+		szPartOfSet		= query.value("partOfSet").toString();
 		szLeadArtist	= query.value("leadArtist").toString();
 		szBand			= query.value("band").toString();
 		szComposer		= query.value("composer").toString();
@@ -166,8 +168,11 @@ void cMainWindow::loadDB()
 			szOldLeadArtist	= szLeadArtist;
 			szOldAlbum		= szAlbum;
 
-			cAlbum*	lpAlbum	= m_albumList.add(szAlbum, szLeadArtist);
+			lpAlbum			= m_albumList.add(szAlbum, szLeadArtist);
 		}
+
+		if(lpAlbum)
+			lpAlbum->addTrack(szTitle, iTrackNumber, szPartOfSet, szBand, szComposer, recordingTime);
 	}
 }
 
@@ -217,10 +222,16 @@ void cMainWindow::displayDB()
 			lpLeadArtistItem.at(0)->appendRow(lpAlbumItem);
 		}
 
-		QList<QStandardItem*>	lpTrackItem;
-		lpTrackItem.append(new QStandardItem("track 1"));
-		lpTrackItem.append(new QStandardItem("track 1"));
-		lpAlbumItem.at(0)->appendRow(lpTrackItem);
+		cTrackList	trackList	= lpAlbum->trackList();
+		for(int y = 0;y < trackList.count();y++)
+		{
+			cTrack*	lpTrack	= trackList.at(y);
+
+			QList<QStandardItem*>	lpTrackItem;
+			lpTrackItem.append(new QStandardItem(lpTrack->title()));
+			lpTrackItem.append(new QStandardItem(lpTrack->title()));
+			lpAlbumItem.at(0)->appendRow(lpTrackItem);
+		}
 	}
 }
 

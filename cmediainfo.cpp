@@ -487,16 +487,14 @@ qint32 cMediaInfo::writeFilename()
 	}
 
 	if(query.next())
-		query.prepare("UPDATE file SET fileType1=:fileType1, fileType=:fileType, length1=:length1, length=:length, bitrate=:bitrate, sampleRate=:sampleRate, channels=:channels, bitsPerSample=:bitsPerSample, layer=:layer, version=:version, sampleWidth=:sampleWidth, sampleFrames=:sampleFrames, isEncrypted=:isEncrypted, trackGain=:trackGain, albumGain=:albumGain, trackPeak=:trackPeak, albumPeak=:albumPeak, protectionEnabled=:protectionEnabled, channelMode=:channelMode, isCopyrighted=:isCopyrighted, isOriginal=:isOriginal, album=:album, title=:title, copyright=:copyright, tracknumber=:tracknumber, contentGroupDescription=:contentGroupDescription, subTitle=:subTitle, originalAlbum=:originalAlbum, partOfSet=:partOfSet, subTitleOfSet=:subTitleOfSet, internationalStandardRecordingCode=:internationalStandardRecordingCode, leadArtist=:leadArtist, band=:band, conductor=:conductor, interpret=:interpret, originalArtist=:originalArtist, textWriter=:textWriter, originalTextWriter=:originalTextWriter, composer=:composer, encodedBy=:encodedBy, beatsPerMinute=:beatsPerMinute, language=:language, contentType=:contentType, mediaType=:mediaType, mood=:mood, producedNotice=:producedNotice, publisher=:publisher, fileOwner=:fileOwner, internetRadioStationName=:internetRadioStationName, internetRadioStationOwner=:internetRadioStationOwner, originalFilename=:originalFilename, playlistDelay=:playlistDelay, encodingTime=:encodingTime, originalReleaseTime=:originalReleaseTime, recordingTime=:recordingTime, releaseTime=:releaseTime, taggingTime=:taggingTime, swhwSettings=:swhwSettings, albumSortOrder=:albumSortOrder, performerSortOrder=:performerSortOrder, titleSortOrder=:titleSortOrder, synchronizedLyrics=:synchronizedLyrics, unsynchronizedLyrics=:unsynchronizedLyrics WHERE filename=:filename AND filesize=:filesize AND filedate=:filedate;");
+		query.prepare("UPDATE file SET fileType=:fileType, length=:length, bitrate=:bitrate, sampleRate=:sampleRate, channels=:channels, bitsPerSample=:bitsPerSample, layer=:layer, version=:version, sampleWidth=:sampleWidth, sampleFrames=:sampleFrames, isEncrypted=:isEncrypted, trackGain=:trackGain, albumGain=:albumGain, trackPeak=:trackPeak, albumPeak=:albumPeak, protectionEnabled=:protectionEnabled, channelMode=:channelMode, isCopyrighted=:isCopyrighted, isOriginal=:isOriginal, album=:album, title=:title, copyright=:copyright, tracknumber=:tracknumber, contentGroupDescription=:contentGroupDescription, subTitle=:subTitle, originalAlbum=:originalAlbum, partOfSet=:partOfSet, subTitleOfSet=:subTitleOfSet, internationalStandardRecordingCode=:internationalStandardRecordingCode, leadArtist=:leadArtist, band=:band, conductor=:conductor, interpret=:interpret, originalArtist=:originalArtist, textWriter=:textWriter, originalTextWriter=:originalTextWriter, composer=:composer, encodedBy=:encodedBy, beatsPerMinute=:beatsPerMinute, language=:language, contentType=:contentType, mediaType=:mediaType, mood=:mood, producedNotice=:producedNotice, publisher=:publisher, fileOwner=:fileOwner, internetRadioStationName=:internetRadioStationName, internetRadioStationOwner=:internetRadioStationOwner, originalFilename=:originalFilename, playlistDelay=:playlistDelay, encodingTime=:encodingTime, originalReleaseTime=:originalReleaseTime, recordingTime=:recordingTime, releaseTime=:releaseTime, taggingTime=:taggingTime, swhwSettings=:swhwSettings, albumSortOrder=:albumSortOrder, performerSortOrder=:performerSortOrder, titleSortOrder=:titleSortOrder, synchronizedLyrics=:synchronizedLyrics, unsynchronizedLyrics=:unsynchronizedLyrics WHERE filename=:filename AND filesize=:filesize AND filedate=:filedate;");
 	else
-		query.prepare("INSERT INTO file (fileName, fileSize, fileDate, fileType1, fileType, length1, length, bitrate, sampleRate, channels, bitsPerSample, layer, version, sampleWidth, sampleFrames, isEncrypted, trackGain, albumGain, trackPeak, albumPeak, protectionEnabled, channelMode, isCopyrighted, isOriginal, album, title, copyright, tracknumber, contentGroupDescription, subTitle, originalAlbum, partOfSet, subTitleOfSet, internationalStandardRecordingCode, leadArtist, band, conductor, interpret, originalArtist, textWriter, originalTextWriter, composer, encodedBy, beatsPerMinute, language, contentType, mediaType, mood, producedNotice, publisher, fileOwner, internetRadioStationName, internetRadioStationOwner, originalFilename, playlistDelay, encodingTime, originalReleaseTime, recordingTime, releaseTime, taggingTime, swhwSettings, albumSortOrder, performerSortOrder, titleSortOrder, synchronizedLyrics, unsynchronizedLyrics) VALUES (:fileName, :fileSize, :fileDate, :fileType1, :fileType, :length1, :length, :bitrate, :sampleRate, :channels, :bitsPerSample, :layer, :version, :sampleWidth, :sampleFrames, :isEncrypted, :trackGain, :albumGain, :trackPeak, :albumPeak, :protectionEnabled, :channelMode, :isCopyrighted, :isOriginal, :album, :title, :copyright, :tracknumber, :contentGroupDescription, :subTitle, :originalAlbum, :partOfSet, :subTitleOfSet, :internationalStandardRecordingCode, :leadArtist, :band, :conductor, :interpret, :originalArtist, :textWriter, :originalTextWriter, :composer, :encodedBy, :beatsPerMinute, :language, :contentType, :mediaType, :mood, :producedNotice, :publisher, :fileOwner, :internetRadioStationName, :internetRadioStationOwner, :originalFilename, :playlistDelay, :encodingTime, :originalReleaseTime, :recordingTime, :releaseTime, :taggingTime, :swhwSettings, :albumSortOrder, :performerSortOrder, :titleSortOrder, :synchronizedLyrics, :unsynchronizedLyrics);");
+		query.prepare("INSERT INTO file (fileName, fileSize, fileDate, fileType, length, bitrate, sampleRate, channels, bitsPerSample, layer, version, sampleWidth, sampleFrames, isEncrypted, trackGain, albumGain, trackPeak, albumPeak, protectionEnabled, channelMode, isCopyrighted, isOriginal, album, title, copyright, tracknumber, contentGroupDescription, subTitle, originalAlbum, partOfSet, subTitleOfSet, internationalStandardRecordingCode, leadArtist, band, conductor, interpret, originalArtist, textWriter, originalTextWriter, composer, encodedBy, beatsPerMinute, language, contentType, mediaType, mood, producedNotice, publisher, fileOwner, internetRadioStationName, internetRadioStationOwner, originalFilename, playlistDelay, encodingTime, originalReleaseTime, recordingTime, releaseTime, taggingTime, swhwSettings, albumSortOrder, performerSortOrder, titleSortOrder, synchronizedLyrics, unsynchronizedLyrics) VALUES (:fileName, :fileSize, :fileDate, :fileType, :length, :bitrate, :sampleRate, :channels, :bitsPerSample, :layer, :version, :sampleWidth, :sampleFrames, :isEncrypted, :trackGain, :albumGain, :trackPeak, :albumPeak, :protectionEnabled, :channelMode, :isCopyrighted, :isOriginal, :album, :title, :copyright, :tracknumber, :contentGroupDescription, :subTitle, :originalAlbum, :partOfSet, :subTitleOfSet, :internationalStandardRecordingCode, :leadArtist, :band, :conductor, :interpret, :originalArtist, :textWriter, :originalTextWriter, :composer, :encodedBy, :beatsPerMinute, :language, :contentType, :mediaType, :mood, :producedNotice, :publisher, :fileOwner, :internetRadioStationName, :internetRadioStationOwner, :originalFilename, :playlistDelay, :encodingTime, :originalReleaseTime, :recordingTime, :releaseTime, :taggingTime, :swhwSettings, :albumSortOrder, :performerSortOrder, :titleSortOrder, :synchronizedLyrics, :unsynchronizedLyrics);");
 
 	query.bindValue(":fileName", fileName());
 	query.bindValue(":fileSize", fileSize());
 	query.bindValue(":fileDate", fileDate());
-	query.bindValue(":fileType1", fileType1());
 	query.bindValue(":fileType", fileType());
-	query.bindValue(":length1", length1());
 	query.bindValue(":length", length());
 	query.bindValue(":bitrate", bitrate());
 	query.bindValue(":sampleRate", sampleRate());
@@ -628,18 +626,23 @@ bool cMediaInfo::writeToDB()
 void cMediaInfo::readTagV1(ID3v1::Tag* lpTag)
 {
 	QString	szTmp;
-	m_szAlbum				= QString::fromStdWString(lpTag->album().toWString());
+
+	if(m_szAlbum.isEmpty())
+		m_szAlbum			= QString::fromStdWString(lpTag->album().toWString());
 	szTmp					= QString::fromStdWString(lpTag->artist().toWString());
-	if(!szTmp.isEmpty())
+	if(!szTmp.isEmpty() && m_szArtistList.isEmpty())
 		m_szArtistList		= szTmp.split("\n");
-	m_szAlbum				= QString::fromStdWString(lpTag->album().toWString());
-	m_szComment				= QString::fromStdWString(lpTag->comment().toWString());
+	if(m_szComment.isEmpty())
+		m_szComment			= QString::fromStdWString(lpTag->comment().toWString());
 	szTmp					= QString::fromStdWString(lpTag->genre().toWString());
-	if(!szTmp.isEmpty())
+	if(!szTmp.isEmpty() && m_szGenreList.isEmpty())
 		m_szGenreList		= szTmp.split("\n");
-	m_szTitle				= QString::fromStdWString(lpTag->title().toWString());
-	m_szTrackNumber			= QString("%1").arg(lpTag->track());
-	m_iYear					= lpTag->year();
+	if(m_szTitle.isEmpty())
+		m_szTitle			= QString::fromStdWString(lpTag->title().toWString());
+	if(m_szTrackNumber.isEmpty())
+		m_szTrackNumber		= QString("%1").arg(lpTag->track());
+	if(m_iYear == 0)
+		m_iYear				= lpTag->year();
 }
 
 void cMediaInfo::readTagV2(ID3v2::Tag* lpTag)
@@ -876,46 +879,9 @@ QDateTime cMediaInfo::fileDate()
 	return(fileInfo.created());
 }
 
-cMediaInfo::MEDIA_TYPE cMediaInfo::fileType1()
+cMediaInfo::MEDIA_TYPE cMediaInfo::fileType()
 {
 	return(m_fileType);
-}
-
-QString cMediaInfo::fileType1Text()
-{
-	switch(m_fileType)
-	{
-	case MEDIA_TYPE_APE:
-		return("APE");
-	case MEDIA_TYPE_ASF:
-		return("ASF");
-	case MEDIA_TYPE_FLAC:
-		return("FLAC");
-	case MEDIA_TYPE_MP4:
-		return("MP4");
-	case MEDIA_TYPE_MPC:
-		return("MPC");
-	case MEDIA_TYPE_MPEG:
-		return("MPEG");
-	case MEDIA_TYPE_TRUEAUDIO:
-		return("TrueAudio");
-	case MEDIA_TYPE_WAVPACK:
-		return("WavPack");
-	case MEDIA_TYPE_WAV:
-		return("Wave");
-	default:
-		return("unknown");
-	}
-}
-
-qint32 cMediaInfo::length1()
-{
-	return(m_iLength);
-}
-
-QString cMediaInfo::length1Text()
-{
-	return("not implemented");
 }
 
 qint16 cMediaInfo::bitrate()
@@ -1168,11 +1134,6 @@ QStringList cMediaInfo::language()
 QStringList cMediaInfo::contentType()
 {
 	return(m_szContentType);
-}
-
-QString cMediaInfo::fileType()
-{
-	return(m_szFileType);
 }
 
 QStringList cMediaInfo::mediaType()

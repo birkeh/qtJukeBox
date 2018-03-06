@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     common.cpp \
     cpixmap.cpp \
     cmusicviewitemdelegate.cpp \
-    calbum.cpp
+    calbum.cpp \
+    ctrack.cpp
 
 HEADERS  += cmainwindow.h \
     cmediainfo.h \
@@ -56,6 +57,7 @@ HEADERS  += cmainwindow.h \
     common.h \
     cpixmap.h \
     cmusicviewitemdelegate.h \
-    calbum.h
+    calbum.h \
+    ctrack.h
 
 FORMS    += cmainwindow.ui

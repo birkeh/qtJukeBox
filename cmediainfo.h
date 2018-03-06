@@ -80,12 +80,9 @@ public:
 	QString			fileName();
 	qint64			fileSize();
 	QDateTime		fileDate();
-	MEDIA_TYPE		fileType1();
-	QString			fileType1Text();
+	cMediaInfo::MEDIA_TYPE fileType();
 
 	//
-	qint32			length1();
-	QString			length1Text();
 	qint16			bitrate();
 	QString			bitrateText();
 	qint32			sampleRate();
@@ -143,7 +140,7 @@ public:
 	// TKEY
 	QStringList		language();								// TLAN
 	QStringList		contentType();							// TCON
-	QString			fileType();								// TFLT
+//	QString			fileType();								// TFLT
 	QStringList		mediaType();							// TMED
 	QString			mood();									// TMOO
 

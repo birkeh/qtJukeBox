@@ -37,6 +37,8 @@ class cAlbumList : public QList<cAlbum*>
 {
 public:
 	cAlbum*			add(const QString& szAlbum, const QString &szBand);
+	void			sort();
+private:
 };
 
 

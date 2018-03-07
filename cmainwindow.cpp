@@ -219,30 +219,32 @@ void cMainWindow::displayDB()
 {
 	m_lpMusicListModel->clear();
 
+	m_albumList.sort();
+
 	QStringList	header;
 	header << "Original";
 
 	m_lpMusicListModel->setHorizontalHeaderLabels(header);
 
-	QString					szOldLeadArtist		= "OldLeadArtist";
-	QString					szOldAlbum			= "OldAlbum";
-	QList<QStandardItem*>	lpLeadArtistItem;
+	QString					szOldBand		= "OldBand";
+	QString					szOldAlbum		= "OldAlbum";
+	QList<QStandardItem*>	lpBandItem;
 	QList<QStandardItem*>	lpAlbumItem;
 
 	for(int x = 0;x < m_albumList.count();x++)
 	{
 		cAlbum*					lpAlbum	= m_albumList.at(x);
 
-		if(szOldLeadArtist != lpAlbum->leadArtist())
+		if(szOldBand != lpAlbum->band())
 		{
 
-			szOldLeadArtist	= lpAlbum->leadArtist();
+			szOldBand	= lpAlbum->band();
 			szOldAlbum		= "";
 
-			lpLeadArtistItem.clear();
-			lpLeadArtistItem.append(new QStandardItem(szOldLeadArtist));
+			lpBandItem.clear();
+			lpBandItem.append(new QStandardItem(szOldBand));
 
-			m_lpMusicListModel->appendRow(lpLeadArtistItem);
+			m_lpMusicListModel->appendRow(lpBandItem);
 		}
 
 		if(szOldAlbum != lpAlbum->album())
@@ -254,7 +256,7 @@ void cMainWindow::displayDB()
 			lpAlbumItem.at(0)->setData(QVariant::fromValue(lpAlbum), Qt::UserRole+MUSICLIST_ORI_ALBUM);
 			lpAlbumItem.append(new QStandardItem(szOldAlbum));
 
-			lpLeadArtistItem.at(0)->appendRow(lpAlbumItem);
+			lpBandItem.at(0)->appendRow(lpAlbumItem);
 		}
 
 		cTrackList	trackList	= lpAlbum->trackList();

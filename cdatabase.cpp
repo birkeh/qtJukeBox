@@ -93,7 +93,7 @@ int cDatabase::initDB()
 					   " album TEXT, "
 					   " title TEXT, "
 					   " copyright TEXT, "
-					   " tracknumber INTEGER, "
+					   " trackNumber TEXT, "
 					   " contentGroupDescription TEXT, "
 					   " subTitle TEXT, "
 					   " originalAlbum TEXT, "

@@ -15,19 +15,19 @@ class cTrackList;
 class cAlbum
 {
 public:
-	cAlbum(const QString& szAlbum, const QString& szLeadArtist);
+	cAlbum(const QString& szAlbum, const QString& szBand);
 
 	void			setAlbum(const QString& szAlbum);
 	QString			album();
 
-	void			setLeadArtist(const QString& szLeadArtist);
-	QString			leadArtist();
+	void			setBand(const QString& szBand);
+	QString			band();
 
-	cTrack*			addTrack(const QString& szTitle, const qint16& trackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
+	cTrack*			addTrack(const QString& szTitle, const QString& szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
 	cTrackList		trackList();
 private:
 	QString			m_szAlbum;
-	QString			m_szLeadArtist;
+	QString			m_szBand;
 	cTrackList		m_trackList;
 };
 
@@ -36,7 +36,7 @@ Q_DECLARE_METATYPE(cAlbum*)
 class cAlbumList : public QList<cAlbum*>
 {
 public:
-	cAlbum*			add(const QString& szAlbum, const QString &szLeadArtist);
+	cAlbum*			add(const QString& szAlbum, const QString &szBand);
 };
 
 

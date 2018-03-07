@@ -13,7 +13,7 @@ class cAlbum;
 class cTrack
 {
 public:
-	cTrack(cAlbum* lpAlbum, const QString& szTitle, const qint16& trackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
+	cTrack(cAlbum* lpAlbum, const QString& szTitle, const QString& szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
 
 	void			setAlbum(cAlbum* lpAlbum);
 	cAlbum*			album();
@@ -21,8 +21,8 @@ public:
 	void			setTitle(const QString& szTitle);
 	QString			title();
 
-	void			setTrackNumber(const qint16& trackNumber);
-	qint16			trackNumber();
+	void			setTrackNumber(const QString& szTrackNumber);
+	QString			trackNumber();
 
 	void			setPartOfSet(const QString& szPartOfSet);
 	QString			partOfSet();
@@ -39,7 +39,7 @@ public:
 private:
 	cAlbum*			m_lpAlbum;
 	QString			m_szTitle;
-	qint16			m_iTrackNumber;
+	QString			m_szTrackNumber;
 	QString			m_szPartOfSet;
 	QString			m_szBand;
 	QString			m_szComposer;
@@ -51,7 +51,7 @@ Q_DECLARE_METATYPE(cTrack*)
 class cTrackList : public QList<cTrack*>
 {
 public:
-	cTrack*			add(cAlbum* lpAlbum, const QString& szTitle, const qint16& trackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
+	cTrack*			add(cAlbum* lpAlbum, const QString& szTitle, const QString& szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
 };
 
 #endif // CTRACK_H

@@ -16,13 +16,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QSplitter" name="m_lpSplitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QTreeView" name="m_lpMusicListOriginal"/>
-      <widget class="QTreeView" name="m_lpMusicListNew"/>
-     </widget>
+     <widget class="QTreeView" name="m_lpMusicList"/>
     </item>
    </layout>
   </widget>

@@ -74,31 +74,12 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_lpDB	= new cDatabase(this);
 
 	m_lpMusicListModel	= new QStandardItemModel(0, 3);
-	ui->m_lpMusicListOriginal->setModel(m_lpMusicListModel);
-	ui->m_lpMusicListOriginal->setItemDelegate(new cMusicViewItemDelegate(ui->m_lpMusicListOriginal));
-	ui->m_lpMusicListNew->setModel(m_lpMusicListModel);
-	ui->m_lpMusicListNew->setItemDelegate(new cMusicViewItemDelegate(ui->m_lpMusicListNew));
+	ui->m_lpMusicList->setModel(m_lpMusicListModel);
+//	ui->m_lpMusicList->setItemDelegate(new cMusicViewItemDelegate(ui->m_lpMusicList));
 
-	connect(ui->m_lpMusicListOriginal, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onCustomContextMenuRequestedOriginal(QPoint)));
-	connect(ui->m_lpMusicListNew, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onCustomContextMenuRequestedNew(QPoint)));
-
-	connect(ui->m_lpMusicListOriginal, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClickedOriginal(QModelIndex)));
-	connect(ui->m_lpMusicListNew, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClickedNew(QModelIndex)));
-
-	connect(ui->m_lpMusicListOriginal, SIGNAL(pressed(QModelIndex)), this, SLOT(onPressedOriginal(QModelIndex)));
-	connect(ui->m_lpMusicListNew, SIGNAL(pressed(QModelIndex)), this, SLOT(onPressedNew(QModelIndex)));
-
-	connect(ui->m_lpMusicListOriginal, SIGNAL(expanded(QModelIndex)), this, SLOT(onExpandedOriginal(QModelIndex)));
-	connect(ui->m_lpMusicListNew, SIGNAL(expanded(QModelIndex)), this, SLOT(onExpandedNew(QModelIndex)));
-
-	connect(ui->m_lpMusicListOriginal, SIGNAL(collapsed(QModelIndex)), this, SLOT(onCollapsedOriginal(QModelIndex)));
-	connect(ui->m_lpMusicListNew, SIGNAL(collapsed(QModelIndex)), this, SLOT(onCollapsedNew(QModelIndex)));
-
-	connect(ui->m_lpMusicListOriginal->selectionModel(), &QItemSelectionModel::selectionChanged, this, &cMainWindow::onSelectionChangedOriginal);
-	connect(ui->m_lpMusicListNew->selectionModel(), &QItemSelectionModel::selectionChanged, this, &cMainWindow::onSelectionChangedNew);
-
-	connect(ui->m_lpMusicListOriginal->verticalScrollBar(), &QScrollBar::valueChanged, this, &cMainWindow::onScrollbarValueChangedOriginal);
-	connect(ui->m_lpMusicListNew->verticalScrollBar(), &QScrollBar::valueChanged, this, &cMainWindow::onScrollbarValueChangedNew);
+	connect(ui->m_lpMusicList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onCustomContextMenuRequested(QPoint)));
+	connect(ui->m_lpMusicList, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
+	connect(ui->m_lpMusicList, SIGNAL(pressed(QModelIndex)), this, SLOT(onPressed(QModelIndex)));
 
 	loadDB();
 	displayDB();
@@ -136,7 +117,7 @@ void cMainWindow::loadDB()
 	QString		szOldAlbum		= "";
 	QString		szAlbum;
 	QString		szTitle;
-	qint16		iTrackNumber;
+	QString		szTrackNumber;
 	QString		szPartOfSet;
 	QString		szLeadArtist;
 	QString		szBand;
@@ -145,7 +126,72 @@ void cMainWindow::loadDB()
 
 	cAlbum*		lpAlbum			= 0;
 
-	query.prepare("SELECT leadArtist, album, title, trackNumber, partOfSet, band, composer, recordingTime FROM file ORDER BY leadArtist, album, trackNumber;");
+	query.prepare("SELECT    id, "
+				  "          fileName, "
+				  "          fileSize, "
+				  "          fileDate, "
+				  "          fileType, "
+				  "          length, "
+				  "          bitrate, "
+				  "          sampleRate, "
+				  "          channels, "
+				  "          bitsPerSample, "
+				  "          layer, "
+				  "          version, "
+				  "          sampleWidth, "
+				  "          sampleFrames, "
+				  "          isEncrypted, "
+				  "          trackGain, "
+				  "          albumGain, "
+				  "          trackPeak, "
+				  "          albumPeak, "
+				  "          protectionenabled, "
+				  "          channelMode, "
+				  "          isCopyrighted, "
+				  "          isOriginal, "
+				  "          album, "
+				  "          title, "
+				  "          copyright, "
+				  "          trackNumber, "
+				  "          contentGroupDescription, "
+				  "          subTitle, "
+				  "          originalAlbum, "
+				  "          partOfSet, "
+				  "          subTitleOfSet, "
+				  "          internationalStandardRecordingCode, "
+				  "          leadArtist, "
+				  "          band, "
+				  "          conductor, "
+				  "          interpret, "
+				  "          originalArtist, "
+				  "          textWriter, "
+				  "          originalTextWriter, "
+				  "          composer, "
+				  "          encodedBy, "
+				  "          beatsPerMinute, "
+				  "          language, "
+				  "          contentType, "
+				  "          mediaType, "
+				  "          mood, "
+				  "          producedNotice, "
+				  "          publisher, "
+				  "          fileOwner, "
+				  "          internetRadioStationName, "
+				  "          internetRadioStationOwner, "
+				  "          originalFilename, "
+				  "          playlistDelay, "
+				  "          encodingTime, "
+				  "          originalReleaseTime, "
+				  "          recordingTime, "
+				  "          releaseTime, "
+				  "          taggingTime, "
+				  "          swhwSettings, "
+				  "          albumSortOrder, "
+				  "          performerSortOrder, "
+				  "          titleSortOrder, "
+				  "          synchronizedLyrics, "
+				  "          unsynchronizedLyrics "
+				  "FROM      file;");
 	if(!query.exec())
 	{
 		myDebug << query.lastError().text();
@@ -156,23 +202,16 @@ void cMainWindow::loadDB()
 	{
 		szAlbum			= query.value("album").toString();
 		szTitle			= query.value("title").toString();
-		iTrackNumber	= query.value("trackNumber").toInt();
+		szTrackNumber	= query.value("trackNumber").toString();
 		szPartOfSet		= query.value("partOfSet").toString();
 		szLeadArtist	= query.value("leadArtist").toString();
 		szBand			= query.value("band").toString();
 		szComposer		= query.value("composer").toString();
 		recordingTime	= query.value("recordingTime").toDate();
 
-		if(szOldLeadArtist != szLeadArtist || szOldAlbum != szAlbum)
-		{
-			szOldLeadArtist	= szLeadArtist;
-			szOldAlbum		= szAlbum;
-
-			lpAlbum			= m_albumList.add(szAlbum, szLeadArtist);
-		}
-
+		lpAlbum			= m_albumList.add(szAlbum, szBand);
 		if(lpAlbum)
-			lpAlbum->addTrack(szTitle, iTrackNumber, szPartOfSet, szBand, szComposer, recordingTime);
+			lpAlbum->addTrack(szTitle, szTrackNumber, szPartOfSet, szBand, szComposer, recordingTime);
 	}
 }
 
@@ -181,12 +220,9 @@ void cMainWindow::displayDB()
 	m_lpMusicListModel->clear();
 
 	QStringList	header;
-	header << "Original" << "New";
+	header << "Original";
 
 	m_lpMusicListModel->setHorizontalHeaderLabels(header);
-
-	ui->m_lpMusicListOriginal->setColumnHidden(1, true);
-	ui->m_lpMusicListNew->setColumnHidden(0, true);
 
 	QString					szOldLeadArtist		= "OldLeadArtist";
 	QString					szOldAlbum			= "OldAlbum";
@@ -204,7 +240,6 @@ void cMainWindow::displayDB()
 			szOldAlbum		= "";
 
 			lpLeadArtistItem.clear();
-			lpLeadArtistItem.append(new QStandardItem(szOldLeadArtist));
 			lpLeadArtistItem.append(new QStandardItem(szOldLeadArtist));
 
 			m_lpMusicListModel->appendRow(lpLeadArtistItem);
@@ -229,188 +264,66 @@ void cMainWindow::displayDB()
 
 			QList<QStandardItem*>	lpTrackItem;
 			lpTrackItem.append(new QStandardItem(lpTrack->title()));
-			lpTrackItem.append(new QStandardItem(lpTrack->title()));
 			lpAlbumItem.at(0)->appendRow(lpTrackItem);
 		}
 	}
 }
 
-void cMainWindow::onCustomContextMenuRequestedOriginal(const QPoint &pos)
+void cMainWindow::onCustomContextMenuRequested(const QPoint &/*pos*/)
 {
-	onCustomContextMenuRequested(ui->m_lpMusicListOriginal, pos);
-}
+	/*
+		QMenu*	lpMenu	= new QMenu(this);
 
-void cMainWindow::onDoubleClickedOriginal(const QModelIndex &index)
-{
-	onDoubleClicked(index);
-}
+		lpMenu->addAction("add", this, SLOT(onActionAdd()));
 
-void cMainWindow::onPressedOriginal(const QModelIndex &index)
-{
-	onPressed(index);
-}
+		lpMenu->addAction("update all", this, SLOT(onActionUpdateAll()));
+		lpMenu->addAction("update unfinished", this, SLOT(onActionUpdateUnfinished()));
+		lpMenu->addSeparator();
 
-void cMainWindow::onExpandedOriginal(const QModelIndex &index)
-{
-	ui->m_lpMusicListNew->expand(index);
-}
-
-void cMainWindow::onCollapsedOriginal(const QModelIndex &index)
-{
-	ui->m_lpMusicListNew->collapse(index);
-}
-
-void cMainWindow::onSelectionChangedOriginal(const QItemSelection &selected, const QItemSelection &deselected)
-{
-	if(m_bProcessing)
-		return;
-
-	m_bProcessing	= true;
-
-	QItemSelectionModel*	lpOriginal	= ui->m_lpMusicListOriginal->selectionModel();
-	QItemSelectionModel*	lpNew		= ui->m_lpMusicListNew->selectionModel();
-	QModelIndexList			selected1	= lpOriginal->selectedIndexes();
-
-	lpNew->clearSelection();
-
-	for(int z = 0;z < selected1.count();z++)
-	{
-
-		QStandardItem*	lpItem	= m_lpMusicListModel->itemFromIndex(selected1.at(z));
-		QModelIndex		index	= lpItem->index();
-		lpNew->select(index, QItemSelectionModel::Select);
-	}
-
-	m_bProcessing	= false;
-}
-
-void cMainWindow::onScrollbarValueChangedOriginal(int value)
-{
-	if(m_bProcessing)
-		return;
-
-	m_bProcessing	= true;
-
-	ui->m_lpMusicListNew->verticalScrollBar()->setValue(value);
-
-	m_bProcessing	= false;
-}
-
-void cMainWindow::onCustomContextMenuRequestedNew(const QPoint &pos)
-{
-	onCustomContextMenuRequested(ui->m_lpMusicListNew, pos);
-}
-
-void cMainWindow::onDoubleClickedNew(const QModelIndex &index)
-{
-	onDoubleClicked(index);
-}
-
-void cMainWindow::onPressedNew(const QModelIndex &index)
-{
-	onPressed(index);
-}
-
-void cMainWindow::onExpandedNew(const QModelIndex &index)
-{
-	ui->m_lpMusicListOriginal->expand(index);
-}
-
-void cMainWindow::onCollapsedNew(const QModelIndex &index)
-{
-	ui->m_lpMusicListOriginal->collapse(index);
-}
-
-void cMainWindow::onSelectionChangedNew(const QItemSelection &selected, const QItemSelection &deselected)
-{
-	if(m_bProcessing)
-		return;
-
-	m_bProcessing	= true;
-
-	QItemSelectionModel*	lpOriginal	= ui->m_lpMusicListOriginal->selectionModel();
-	QItemSelectionModel*	lpNew		= ui->m_lpMusicListNew->selectionModel();
-	QModelIndexList			selected2	= lpNew->selectedIndexes();
-
-	lpOriginal->clearSelection();
-
-	for(int z = 0;z < selected2.count();z++)
-	{
-		QStandardItem*	lpItem	= m_lpMusicListModel->itemFromIndex(selected2.at(z));
-		QModelIndex		index	= lpItem->index();
-		lpOriginal->select(index, QItemSelectionModel::Select);
-	}
-
-	m_bProcessing	= false;
-}
-
-void cMainWindow::onScrollbarValueChangedNew(int value)
-{
-	if(m_bProcessing)
-		return;
-
-	m_bProcessing	= true;
-
-	ui->m_lpMusicListOriginal->verticalScrollBar()->setValue(value);
-
-	m_bProcessing	= false;
-}
-
-void cMainWindow::onCustomContextMenuRequested(const QTreeView* lpTreeView, const QPoint &pos)
-{
-/*
-	QMenu*	lpMenu	= new QMenu(this);
-
-	lpMenu->addAction("add", this, SLOT(onActionAdd()));
-
-	lpMenu->addAction("update all", this, SLOT(onActionUpdateAll()));
-	lpMenu->addAction("update unfinished", this, SLOT(onActionUpdateUnfinished()));
-	lpMenu->addSeparator();
-
-	if(lpTreeView->selectionModel()->selectedRows().count() == 1)
-	{
-		cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(lpTreeView->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
-		if(lpSerie)
+		if(lpTreeView->selectionModel()->selectedRows().count() == 1)
 		{
-			lpMenu->addAction("update", this, SLOT(onActionUpdate()));
-			lpMenu->addAction("delete", this, SLOT(onActionDelete()));
-			lpMenu->addAction("edit", this, SLOT(onActionEdit()));
-			lpMenu->addSeparator();
-
-			if(!lpSerie->IMDBID().isEmpty())
-				lpMenu->addAction("open IMDB", this, SLOT(onActionGotoIMDB()));
-
-			if(!lpSerie->download().isEmpty())
+			cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(lpTreeView->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
+			if(lpSerie)
 			{
-				lpMenu->addAction("open download link", this, SLOT(onActionGotoDownload()));
-				lpMenu->addAction("copy download link", this, SLOT(onActionCopyDownload()));
+				lpMenu->addAction("update", this, SLOT(onActionUpdate()));
+				lpMenu->addAction("delete", this, SLOT(onActionDelete()));
+				lpMenu->addAction("edit", this, SLOT(onActionEdit()));
+				lpMenu->addSeparator();
+
+				if(!lpSerie->IMDBID().isEmpty())
+					lpMenu->addAction("open IMDB", this, SLOT(onActionGotoIMDB()));
+
+				if(!lpSerie->download().isEmpty())
+				{
+					lpMenu->addAction("open download link", this, SLOT(onActionGotoDownload()));
+					lpMenu->addAction("copy download link", this, SLOT(onActionCopyDownload()));
+				}
+				lpMenu->addAction("open all download links", this, SLOT(onActionGotoAllDownload()));
+				lpMenu->addAction("open all download links (open)", this, SLOT(onActionGotoAllDownloadOpen()));
+				lpMenu->addSeparator();
+				lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
 			}
-			lpMenu->addAction("open all download links", this, SLOT(onActionGotoAllDownload()));
-			lpMenu->addAction("open all download links (open)", this, SLOT(onActionGotoAllDownloadOpen()));
+		}
+		else if(lpTreeView->selectionModel()->selectedRows().count())
+		{
+			lpMenu->addAction("update selected", this, SLOT(onActionUpdate()));
+			lpMenu->addAction("delete selected", this, SLOT(onActionDelete()));
 			lpMenu->addSeparator();
 			lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
 		}
-	}
-	else if(lpTreeView->selectionModel()->selectedRows().count())
-	{
-		lpMenu->addAction("update selected", this, SLOT(onActionUpdate()));
-		lpMenu->addAction("delete selected", this, SLOT(onActionDelete()));
+
 		lpMenu->addSeparator();
-		lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
-	}
+		lpMenu->addAction("export...", this, SLOT(onActionExport()));
 
-	lpMenu->addSeparator();
-	lpMenu->addAction("export...", this, SLOT(onActionExport()));
-
-	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
-*/
+		lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
+	*/
 }
 
-void cMainWindow::onDoubleClicked(const QModelIndex &index)
+void cMainWindow::onDoubleClicked(const QModelIndex &/*index*/)
 {
 }
 
-void cMainWindow::onPressed(const QModelIndex &index)
+void cMainWindow::onPressed(const QModelIndex &/*index*/)
 {
 	switch(QGuiApplication::mouseButtons())
 	{

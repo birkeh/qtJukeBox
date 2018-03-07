@@ -1,10 +1,10 @@
 #include "ctrack.h"
 
 
-cTrack::cTrack(cAlbum* lpAlbum, const QString& szTitle, const qint16& trackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime) :
+cTrack::cTrack(cAlbum* lpAlbum, const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime) :
 	m_lpAlbum(lpAlbum),
 	m_szTitle(szTitle),
-	m_iTrackNumber(trackNumber),
+	m_szTrackNumber(szTrackNumber),
 	m_szPartOfSet(szPartOfSet),
 	m_szBand(szBand),
 	m_szComposer(szComposer),
@@ -32,14 +32,14 @@ QString cTrack::title()
 	return(m_szTitle);
 }
 
-void cTrack::setTrackNumber(const qint16& trackNumber)
+void cTrack::setTrackNumber(const QString &szTrackNumber)
 {
-	m_iTrackNumber	= trackNumber;
+	m_szTrackNumber	= szTrackNumber;
 }
 
-qint16 cTrack::trackNumber()
+QString cTrack::trackNumber()
 {
-	return(m_iTrackNumber);
+	return(m_szTrackNumber);
 }
 
 void cTrack::setPartOfSet(const QString& szPartOfSet)
@@ -82,7 +82,7 @@ QDate cTrack::recordingTime()
 	return(m_recordingTime);
 }
 
-cTrack*  cTrackList::add(cAlbum* lpAlbum, const QString& szTitle, const qint16& trackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate &recordingTime)
+cTrack*  cTrackList::add(cAlbum* lpAlbum, const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate &recordingTime)
 {
 	QString	szTitle1		= szTitle;
 	QString	szBand1			= szBand;
@@ -95,7 +95,7 @@ cTrack*  cTrackList::add(cAlbum* lpAlbum, const QString& szTitle, const qint16& 
 	if(szComposer1.isEmpty())
 		szComposer1	= "*** NO COMPOSER ***";
 
-	cTrack*	lpTrackNew	= new cTrack(lpAlbum, szTitle1, trackNumber, szPartOfSet, szBand1, szComposer1, recordingTime);
+	cTrack*	lpTrackNew	= new cTrack(lpAlbum, szTitle1, szTrackNumber, szPartOfSet, szBand1, szComposer1, recordingTime);
 	append(lpTrackNew);
 	return(lpTrackNew);
 }

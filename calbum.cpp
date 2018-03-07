@@ -2,9 +2,9 @@
 #include "ctrack.h"
 
 
-cAlbum::cAlbum(const QString& szAlbum, const QString &szLeadArtist) :
+cAlbum::cAlbum(const QString& szAlbum, const QString &szBand) :
 	m_szAlbum(szAlbum),
-	m_szLeadArtist(szLeadArtist)
+	m_szBand(szBand)
 {
 }
 
@@ -18,19 +18,19 @@ QString cAlbum::album()
 	return(m_szAlbum);
 }
 
-void cAlbum::setLeadArtist(const QString& szLeadArtist)
+void cAlbum::setBand(const QString& szBand)
 {
-	m_szLeadArtist	= szLeadArtist;
+	m_szBand	= szBand;
 }
 
-QString cAlbum::leadArtist()
+QString cAlbum::band()
 {
-	return(m_szLeadArtist);
+	return(m_szBand);
 }
 
-cTrack* cAlbum::addTrack(const QString& szTitle, const qint16& trackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate &recordingTime)
+cTrack* cAlbum::addTrack(const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate &recordingTime)
 {
-	return(m_trackList.add(this, szTitle, trackNumber, szPartOfSet, szBand, szComposer, recordingTime));
+	return(m_trackList.add(this, szTitle, szTrackNumber, szPartOfSet, szBand, szComposer, recordingTime));
 }
 
 cTrackList cAlbum::trackList()
@@ -38,7 +38,7 @@ cTrackList cAlbum::trackList()
 	return(m_trackList);
 }
 
-cAlbum* cAlbumList::add(const QString& szAlbum, const QString& szLeadArtist)
+cAlbum* cAlbumList::add(const QString& szAlbum, const QString& szBand)
 {
 	QString	szAlbum1		= szAlbum;
 	QString	szLeadArtist1	= szLeadArtist;

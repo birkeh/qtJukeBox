@@ -25,6 +25,8 @@ public:
 
 	cTrack*			addTrack(const QString& szTitle, const QString& szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
 	cTrackList		trackList();
+
+	void			sortTracks(qint32 sort);
 private:
 	QString			m_szAlbum;
 	QString			m_szBand;

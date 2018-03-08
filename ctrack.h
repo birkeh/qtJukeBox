@@ -52,6 +52,7 @@ class cTrackList : public QList<cTrack*>
 {
 public:
 	cTrack*			add(cAlbum* lpAlbum, const QString& szTitle, const QString& szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
+	void			sort(qint32 sort);
 };
 
 #endif // CTRACK_H

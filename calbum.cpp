@@ -124,6 +124,11 @@ cTrackList cAlbum::trackList()
 	return(m_trackList);
 }
 
+void cAlbum::sortTracks(qint32 sort)
+{
+	m_trackList.sort(sort);
+}
+
 cAlbum* cAlbumList::add(const QString& szAlbum, const QString& szBand)
 {
 	QString	szAlbum1	= szAlbum;
@@ -147,6 +152,11 @@ cAlbum* cAlbumList::add(const QString& szAlbum, const QString& szBand)
 
 void cAlbumList::sort(qint32 sort)
 {
-//	std::sort(begin(), end(), compare);
 	std::sort(begin(), end(), cAlbumCompare(sort));
+
+	if(sort & SORT_TRACK_ASC || sort & SORT_TRACK_DESC)
+	{
+		for(int x = 0;x < count();x++)
+			at(x)->sortTracks(sort);
+	}
 }

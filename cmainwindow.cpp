@@ -219,7 +219,7 @@ void cMainWindow::displayDB()
 {
 	m_lpMusicListModel->clear();
 
-	m_albumList.sort(SORT_ALBUM_ASC | SORT_BAND_ASC);
+	m_albumList.sort(SORT_ALBUM_ASC | SORT_BAND_ASC | SORT_TRACK_ASC);
 
 	QStringList	header;
 	header << "Original";
@@ -243,6 +243,8 @@ void cMainWindow::displayDB()
 
 			lpBandItem.clear();
 			lpBandItem.append(new QStandardItem(szOldBand));
+			lpBandItem[0]->setData(USERROLE_TYPE_BAND, USERROLE_TYPE);
+			lpBandItem[0]->setData(QVariant::fromValue(lpAlbum), USERROLE_VALUE);
 
 			m_lpMusicListModel->appendRow(lpBandItem);
 		}
@@ -253,10 +255,11 @@ void cMainWindow::displayDB()
 
 			lpAlbumItem.clear();
 			lpAlbumItem.append(new QStandardItem(szOldAlbum));
-			lpAlbumItem.at(0)->setData(QVariant::fromValue(lpAlbum), Qt::UserRole+MUSICLIST_ORI_ALBUM);
+			lpAlbumItem[0]->setData(USERROLE_TYPE_ALBUM, USERROLE_TYPE);
+			lpAlbumItem[0]->setData(QVariant::fromValue(lpAlbum), USERROLE_VALUE);
 			lpAlbumItem.append(new QStandardItem(szOldAlbum));
 
-			lpBandItem.at(0)->appendRow(lpAlbumItem);
+			lpBandItem[0]->appendRow(lpAlbumItem);
 		}
 
 		cTrackList	trackList	= lpAlbum->trackList();
@@ -266,7 +269,9 @@ void cMainWindow::displayDB()
 
 			QList<QStandardItem*>	lpTrackItem;
 			lpTrackItem.append(new QStandardItem(lpTrack->title()));
-			lpAlbumItem.at(0)->appendRow(lpTrackItem);
+			lpTrackItem[0]->setData(USERROLE_TYPE_TRACK, USERROLE_TYPE);
+			lpTrackItem[0]->setData(QVariant::fromValue(lpTrack), USERROLE_VALUE);
+			lpAlbumItem[0]->appendRow(lpTrackItem);
 		}
 	}
 }

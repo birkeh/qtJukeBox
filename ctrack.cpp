@@ -1,5 +1,58 @@
+#include "common.h"
+
 #include "ctrack.h"
 
+
+class cTrackCompare
+{
+public:
+	cTrackCompare(qint32 sort) : m_sort(sort) {}
+
+	bool operator()(cTrack* lpFirst, cTrack* lpSecond)
+	{
+		qint16	t1	= 0;
+		qint16	t2	= 0;
+		if(!lpFirst->trackNumber().isEmpty())
+		{
+			if(lpFirst->trackNumber().contains("/"))
+				t1	= lpFirst->trackNumber().left(lpFirst->trackNumber().indexOf("/")).toInt();
+			else
+				t1	= lpFirst->trackNumber().toInt();
+		}
+
+		if(!lpSecond->trackNumber().isEmpty())
+		{
+			if(lpSecond->trackNumber().contains("/"))
+				t2	= lpSecond->trackNumber().left(lpSecond->trackNumber().indexOf("/")).toInt();
+			else
+				t2	= lpSecond->trackNumber().toInt();
+		}
+
+		if(m_sort & SORT_TRACK_ASC)
+		{
+			if(t1 < t2)
+				return(true);
+			else if(t1 > t2)
+				return(false);
+			else
+				return(false);
+		}
+		else if(m_sort & SORT_TRACK_DESC)
+		{
+			if(t1 > t2)
+				return(true);
+			else if(t1 < t2)
+				return(false);
+			else
+				return(false);
+		}
+		else
+			return(false);
+	}
+
+private:
+	qint32		m_sort;
+};
 
 cTrack::cTrack(cAlbum* lpAlbum, const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime) :
 	m_lpAlbum(lpAlbum),
@@ -98,4 +151,9 @@ cTrack*  cTrackList::add(cAlbum* lpAlbum, const QString& szTitle, const QString 
 	cTrack*	lpTrackNew	= new cTrack(lpAlbum, szTitle1, szTrackNumber, szPartOfSet, szBand1, szComposer1, recordingTime);
 	append(lpTrackNew);
 	return(lpTrackNew);
+}
+
+void cTrackList::sort(qint32 sort)
+{
+	std::sort(begin(), end(), cTrackCompare(sort));
 }

@@ -1,21 +1,92 @@
+#include "common.h"
+
 #include "calbum.h"
 #include "ctrack.h"
 
 
-static bool compare(cAlbum* lpFirst, cAlbum* lpSecond)
+class cAlbumCompare
 {
-	if(lpFirst->band() < lpSecond->band())
-		return(true);
-	else if(lpFirst->band() > lpSecond->band())
-		return(false);
-	else
+public:
+	cAlbumCompare(qint32 sort) : m_sort(sort) {}
+
+	bool operator()(cAlbum* lpFirst, cAlbum* lpSecond)
 	{
-		if(lpFirst->album() < lpSecond->album())
-			return(true);
+		if(m_sort & SORT_BAND_ASC)
+		{
+			if(lpFirst->band() < lpSecond->band())
+				return(true);
+			else if(lpFirst->band() > lpSecond->band())
+				return(false);
+			else
+			{
+				if(m_sort & SORT_ALBUM_ASC)
+				{
+					if(lpFirst->album() < lpSecond->album())
+						return(true);
+					else
+						return(false);
+				}
+				else if(m_sort & SORT_ALBUM_DESC)
+				{
+					if(lpFirst->album() > lpSecond->album())
+						return(true);
+					else
+						return(false);
+				}
+				else
+					return(false);
+			}
+		}
+		else if(m_sort & SORT_BAND_DESC)
+		{
+			if(lpFirst->band() > lpSecond->band())
+				return(true);
+			else if(lpFirst->band() < lpSecond->band())
+				return(false);
+			else
+			{
+				if(m_sort & SORT_ALBUM_ASC)
+				{
+					if(lpFirst->album() < lpSecond->album())
+						return(true);
+					else
+						return(false);
+				}
+				else if(m_sort & SORT_ALBUM_DESC)
+				{
+					if(lpFirst->album() > lpSecond->album())
+						return(true);
+					else
+						return(false);
+				}
+				else
+					return(false);
+			}
+		}
 		else
-			return(false);
+		{
+			if(m_sort & SORT_ALBUM_ASC)
+			{
+				if(lpFirst->album() < lpSecond->album())
+					return(true);
+				else
+					return(false);
+			}
+			else if(m_sort & SORT_ALBUM_DESC)
+			{
+				if(lpFirst->album() > lpSecond->album())
+					return(true);
+				else
+					return(false);
+			}
+			else
+				return(false);
+		}
 	}
-}
+
+private:
+	qint32		m_sort;
+};
 
 cAlbum::cAlbum(const QString& szAlbum, const QString &szBand) :
 	m_szAlbum(szAlbum),
@@ -74,7 +145,8 @@ cAlbum* cAlbumList::add(const QString& szAlbum, const QString& szBand)
 	return(lpAlbumNew);
 }
 
-void cAlbumList::sort()
+void cAlbumList::sort(qint32 sort)
 {
-	std::sort(begin(), end(), compare);
+//	std::sort(begin(), end(), compare);
+	std::sort(begin(), end(), cAlbumCompare(sort));
 }

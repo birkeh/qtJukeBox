@@ -219,7 +219,7 @@ void cMainWindow::displayDB()
 {
 	m_lpMusicListModel->clear();
 
-	m_albumList.sort();
+	m_albumList.sort(SORT_ALBUM_ASC | SORT_BAND_ASC);
 
 	QStringList	header;
 	header << "Original";

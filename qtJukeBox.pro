@@ -58,6 +58,7 @@ HEADERS  += cmainwindow.h \
     cpixmap.h \
     cmusicviewitemdelegate.h \
     calbum.h \
-    ctrack.h
+    ctrack.h \
+    common.h
 
 FORMS    += cmainwindow.ui

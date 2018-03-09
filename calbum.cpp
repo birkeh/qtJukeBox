@@ -114,9 +114,9 @@ QString cAlbum::band()
 	return(m_szBand);
 }
 
-cTrack* cAlbum::addTrack(const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate &recordingTime)
+cTrack* cAlbum::addTrack(const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szLeadArtist, const QString& szComposer, const QDate &recordingTime, const QString& szFileName)
 {
-	return(m_trackList.add(this, szTitle, szTrackNumber, szPartOfSet, szBand, szComposer, recordingTime));
+	return(m_trackList.add(this, szTitle, szTrackNumber, szPartOfSet, szBand, szLeadArtist, szComposer, recordingTime, szFileName));
 }
 
 cTrackList cAlbum::trackList()

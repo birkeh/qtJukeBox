@@ -42,6 +42,8 @@ private:
 	void				loadDB();
 	void				displayDB();
 
+	QStandardItem*		newItem(const QString& szText, qint32 type, const QVariant &data, Qt::Alignment align = Qt::AlignLeft, bool bold = false, bool italic = false, const QColor& foreground = QColor(), const QColor& background = QColor());
+
 protected:
 	void				initSettings();
 private slots:

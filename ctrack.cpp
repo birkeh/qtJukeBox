@@ -54,14 +54,16 @@ private:
 	qint32		m_sort;
 };
 
-cTrack::cTrack(cAlbum* lpAlbum, const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime) :
+cTrack::cTrack(cAlbum* lpAlbum, const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szLeadArtist, const QString& szComposer, const QDate& recordingTime, const QString& szFileName) :
 	m_lpAlbum(lpAlbum),
 	m_szTitle(szTitle),
 	m_szTrackNumber(szTrackNumber),
 	m_szPartOfSet(szPartOfSet),
 	m_szBand(szBand),
+	m_szLeadArtist(szLeadArtist),
 	m_szComposer(szComposer),
-	m_recordingTime(recordingTime)
+	m_recordingTime(recordingTime),
+	m_szFileName(szFileName)
 {
 }
 
@@ -135,20 +137,33 @@ QDate cTrack::recordingTime()
 	return(m_recordingTime);
 }
 
-cTrack*  cTrackList::add(cAlbum* lpAlbum, const QString& szTitle, const QString &szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate &recordingTime)
+void cTrack::setFileName(const QString& szFileName)
+{
+	m_szFileName	= szFileName;
+}
+
+QString cTrack::fileName()
+{
+	return(m_szFileName);
+}
+
+cTrack*  cTrackList::add(cAlbum* lpAlbum, const QString& szTitle, const QString& szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szLeadArtist, const QString& szComposer, const QDate& recordingTime, const QString& szFileName)
 {
 	QString	szTitle1		= szTitle;
 	QString	szBand1			= szBand;
+	QString	szLeadArtist1	= szLeadArtist;
 	QString	szComposer1		= szComposer;
 
 	if(szTitle1.isEmpty())
 		szTitle1		= "*** NO TITLE ***";
 	if(szBand1.isEmpty())
-		szBand1	= "*** NO BAND ***";
+		szBand1			= "*** NO BAND ***";
+	if(szLeadArtist1.isEmpty())
+		szLeadArtist1	= "*** NO LEAD ARTIST ***";
 	if(szComposer1.isEmpty())
-		szComposer1	= "*** NO COMPOSER ***";
+		szComposer1		= "*** NO COMPOSER ***";
 
-	cTrack*	lpTrackNew	= new cTrack(lpAlbum, szTitle1, szTrackNumber, szPartOfSet, szBand1, szComposer1, recordingTime);
+	cTrack*	lpTrackNew	= new cTrack(lpAlbum, szTitle1, szTrackNumber, szPartOfSet, szBand1, szLeadArtist1, szComposer1, recordingTime, szFileName);
 	append(lpTrackNew);
 	return(lpTrackNew);
 }

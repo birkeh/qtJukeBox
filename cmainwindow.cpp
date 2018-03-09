@@ -113,8 +113,6 @@ void cMainWindow::initSettings()
 void cMainWindow::loadDB()
 {
 	QSqlQuery	query;
-	QString		szOldLeadArtist	= "";
-	QString		szOldAlbum		= "";
 	QString		szAlbum;
 	QString		szTitle;
 	QString		szTrackNumber;
@@ -123,6 +121,7 @@ void cMainWindow::loadDB()
 	QString		szBand;
 	QString		szComposer;
 	QDate		recordingTime;
+	QString		szFileName;
 
 	cAlbum*		lpAlbum			= 0;
 
@@ -208,10 +207,11 @@ void cMainWindow::loadDB()
 		szBand			= query.value("band").toString();
 		szComposer		= query.value("composer").toString();
 		recordingTime	= query.value("recordingTime").toDate();
+		szFileName		= query.value("fileName").toString();
 
 		lpAlbum			= m_albumList.add(szAlbum, szBand);
 		if(lpAlbum)
-			lpAlbum->addTrack(szTitle, szTrackNumber, szPartOfSet, szBand, szComposer, recordingTime);
+			lpAlbum->addTrack(szTitle, szTrackNumber, szPartOfSet, szBand, szLeadArtist, szComposer, recordingTime, szFileName);
 	}
 }
 
@@ -222,7 +222,7 @@ void cMainWindow::displayDB()
 	m_albumList.sort(SORT_ALBUM_ASC | SORT_BAND_ASC | SORT_TRACK_ASC);
 
 	QStringList	header;
-	header << "Original";
+	header << tr("Track") << tr("Nr") << tr("Set") << tr("Year") << tr("Filename");
 
 	m_lpMusicListModel->setHorizontalHeaderLabels(header);
 
@@ -242,11 +242,9 @@ void cMainWindow::displayDB()
 			szOldAlbum		= "";
 
 			lpBandItem.clear();
-			lpBandItem.append(new QStandardItem(szOldBand));
-			lpBandItem[0]->setData(USERROLE_TYPE_BAND, USERROLE_TYPE);
-			lpBandItem[0]->setData(QVariant::fromValue(lpAlbum), USERROLE_VALUE);
-
+			lpBandItem.append(newItem(szOldBand, USERROLE_TYPE_BAND, QVariant::fromValue(lpAlbum), Qt::AlignLeft, true, false, QColor(), QColor(191, 191, 191)));
 			m_lpMusicListModel->appendRow(lpBandItem);
+			ui->m_lpMusicList->setFirstColumnSpanned(lpBandItem[0]->index().row(), m_lpMusicListModel->invisibleRootItem()->index(), true);
 		}
 
 		if(szOldAlbum != lpAlbum->album())
@@ -254,12 +252,9 @@ void cMainWindow::displayDB()
 			szOldAlbum		= lpAlbum->album();
 
 			lpAlbumItem.clear();
-			lpAlbumItem.append(new QStandardItem(szOldAlbum));
-			lpAlbumItem[0]->setData(USERROLE_TYPE_ALBUM, USERROLE_TYPE);
-			lpAlbumItem[0]->setData(QVariant::fromValue(lpAlbum), USERROLE_VALUE);
-			lpAlbumItem.append(new QStandardItem(szOldAlbum));
-
+			lpAlbumItem.append(newItem(szOldAlbum, USERROLE_TYPE_ALBUM, QVariant::fromValue(lpAlbum), Qt::AlignLeft, false, true, QColor(), QColor(223, 223, 223)));
 			lpBandItem[0]->appendRow(lpAlbumItem);
+			ui->m_lpMusicList->setFirstColumnSpanned(lpAlbumItem[0]->index().row(), lpBandItem[0]->index(), true);
 		}
 
 		cTrackList	trackList	= lpAlbum->trackList();
@@ -268,12 +263,38 @@ void cMainWindow::displayDB()
 			cTrack*	lpTrack	= trackList.at(y);
 
 			QList<QStandardItem*>	lpTrackItem;
-			lpTrackItem.append(new QStandardItem(lpTrack->title()));
-			lpTrackItem[0]->setData(USERROLE_TYPE_TRACK, USERROLE_TYPE);
-			lpTrackItem[0]->setData(QVariant::fromValue(lpTrack), USERROLE_VALUE);
+			lpTrackItem.append(newItem(lpTrack->title(), USERROLE_TYPE_TRACK, QVariant::fromValue(lpTrack)));
+			lpTrackItem.append(newItem(lpTrack->trackNumber(), USERROLE_TYPE_TRACK, QVariant::fromValue(lpTrack), Qt::AlignRight));
+			lpTrackItem.append(newItem(lpTrack->partOfSet(), USERROLE_TYPE_TRACK, QVariant::fromValue(lpTrack), Qt::AlignRight));
+			lpTrackItem.append(newItem(QString::number(lpTrack->recordingTime().year()), USERROLE_TYPE_TRACK, QVariant::fromValue(lpTrack), Qt::AlignRight));
+			lpTrackItem.append(newItem(lpTrack->fileName(), USERROLE_TYPE_TRACK, QVariant::fromValue(lpTrack)));
 			lpAlbumItem[0]->appendRow(lpTrackItem);
 		}
 	}
+}
+
+QStandardItem* cMainWindow::newItem(const QString& szText, qint32 type, const QVariant& data, Qt::Alignment align, bool bold, bool italic, const QColor &foreground, const QColor &background)
+{
+	QStandardItem*	lpItem	= new QStandardItem(szText);
+	lpItem->setTextAlignment(align);
+
+	if(bold || italic)
+	{
+		QFont	font	= lpItem->font();
+		font.setBold(bold);
+		font.setItalic(italic);
+		lpItem->setFont(font);
+	}
+
+	if(foreground.isValid())
+		lpItem->setForeground(QBrush(foreground));
+
+	if(background.isValid())
+		lpItem->setBackground(QBrush(background));
+
+	lpItem->setData(type, USERROLE_TYPE);
+	lpItem->setData(data, USERROLE_VALUE);
+	return(lpItem);
 }
 
 void cMainWindow::onCustomContextMenuRequested(const QPoint &/*pos*/)

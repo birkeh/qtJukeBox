@@ -23,7 +23,7 @@ public:
 	void			setBand(const QString& szBand);
 	QString			band();
 
-	cTrack*			addTrack(const QString& szTitle, const QString& szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString& szComposer, const QDate& recordingTime);
+	cTrack*			addTrack(const QString& szTitle, const QString& szTrackNumber, const QString& szPartOfSet, const QString& szBand, const QString &szLeadArtist, const QString& szComposer, const QDate& recordingTime, const QString &szFileName);
 	cTrackList		trackList();
 
 	void			sortTracks(qint32 sort);
